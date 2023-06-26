@@ -61,8 +61,8 @@ public class ItemRepositoryImpl implements ItemRepository {
             return itemList;
         }
         for (Item item : items.values()) {
-            nameValidation = item.getName().contains(text);
-            descriptionValidation = item.getDescription().contains(text);
+            nameValidation = item.getName().toLowerCase().contains(text);
+            descriptionValidation = item.getDescription().toLowerCase().contains(text);
             if ((nameValidation || descriptionValidation) && item.getAvailable()) {
                 itemList.add(item);
             }
