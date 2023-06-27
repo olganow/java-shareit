@@ -15,9 +15,7 @@ public class ItemRepositoryImpl implements ItemRepository {
 
     @Override
     public Item createItem(Item item, User user) {
-        if (item.getId() == null) {
-            item.setId(++id);
-        }
+        item.setId(++id);
         items.put(item.getId(), item);
         log.info("Item with id = {} has been added to Repository", item.getId());
         return item;
@@ -56,10 +54,6 @@ public class ItemRepositoryImpl implements ItemRepository {
         List<Item> itemList = new ArrayList<>();
         boolean nameValidation;
         boolean descriptionValidation;
-
-        if (text.isEmpty()) {
-            return itemList;
-        }
         for (Item item : items.values()) {
             nameValidation = item.getName().toLowerCase().contains(text);
             descriptionValidation = item.getDescription().toLowerCase().contains(text);

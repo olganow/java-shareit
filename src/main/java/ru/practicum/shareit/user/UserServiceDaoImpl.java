@@ -49,11 +49,10 @@ public class UserServiceDaoImpl implements UserService {
         return userMapper.userToUserDto(user.get());
     }
 
-
     @Override
     public UserDto updateUserById(Long id, UserDto userDto) {
         User user = userMapper.userDtotoUser(getUserById(id));
-        if (userDto.getName() != null) {
+        if (userDto.getName() != null && !userDto.getName().isBlank()) {
             user.setName(userDto.getName());
         }
         if (userDto.getEmail() != null) {

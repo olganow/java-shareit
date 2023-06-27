@@ -59,10 +59,10 @@ public class ItemServiceImpl implements ItemService {
     public ItemDto updateItemById(ItemDto itemDto, Long itemId, Long userId) {
         userRepository.getUserById(userId);
         Item updatedItem = itemMapper.itemDtoToItem(getItemById(itemId, userId));
-        if (itemDto.getName() != null) {
+        if (itemDto.getName() != null && !itemDto.getName().isBlank()) {
             updatedItem.setName(itemDto.getName());
         }
-        if (itemDto.getDescription() != null) {
+        if (itemDto.getDescription() != null && !itemDto.getDescription().isBlank()) {
             updatedItem.setDescription(itemDto.getDescription());
         }
         if (!updatedItem.getOwner().getId().equals(userId)) {
@@ -79,6 +79,9 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public List<ItemDto> searchItemByText(String text, Long userId) {
         List<ItemDto> items = new ArrayList<>();
+        if (text.isEmpty()) {
+            return items;
+        }
         for (Item item : itemRepository.searchItemByText(text, userId)) {
             items.add(itemMapper.itemToItemDto(item));
         }

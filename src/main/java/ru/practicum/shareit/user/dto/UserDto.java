@@ -2,6 +2,7 @@ package ru.practicum.shareit.user.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import ru.practicum.shareit.marker.Marker;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
@@ -11,9 +12,11 @@ import javax.validation.constraints.NotEmpty;
 @AllArgsConstructor
 public class UserDto {
     private Long id;
-    @NotBlank(message = "Name can't be blank")
+    @NotBlank(groups = Marker.OnCreate.class)
     private String name;
-    @Email
-    @NotEmpty(message = "Email can't be empty")
+
+    @Email(groups = Marker.OnCreate.class)
+    @Email(groups = Marker.OnUpdate.class)
+    @NotEmpty(groups = Marker.OnCreate.class)
     private String email;
 }

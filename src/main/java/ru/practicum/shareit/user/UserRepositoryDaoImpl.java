@@ -17,9 +17,7 @@ public class UserRepositoryDaoImpl implements UserRepository {
 
     @Override
     public User createUser(User user) {
-        if (user.getId() == null) {
-            user.setId(++id);
-        }
+        user.setId(++id);
         users.put(user.getId(), user);
         log.info("User with email = {}  has been added to Repository", user.getEmail());
         return user;
