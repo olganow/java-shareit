@@ -30,28 +30,27 @@ public class UserRepositoryDaoImpl implements UserRepository {
     }
 
     @Override
-    public Optional<User> getUserById(Long id) {
+    public User getUserById(Long id) {
         if (!users.containsKey(id)) {
             throw new NotFoundException("User with id =" + id + "doesn't exist");
         }
         log.info("User with id = {} is uploaded from Repository", id);
-        return Optional.of(users.get(id));
+        return users.get(id);
     }
 
 
     @Override
-    public User updateUserById(User user, Long id) {
+    public void updateUserById(User user, Long id) {
         if (!users.containsKey(id)) {
             throw new NotFoundException("User with id =" + id + "doesn't exist");
         }
         users.put(id, user);
         log.info("User with id = {} is updated in Repository", id);
-        return users.get(id);
     }
 
     @Override
     public Optional<User> removeUserById(Long id) {
-        Optional<User> memoryUser = getUserById(id);
+        Optional<User> memoryUser = Optional.of(getUserById(id));
         if (memoryUser.isEmpty()) {
             log.info("User with email with id = {} is not found and can't be removed ", id);
             return Optional.empty();

@@ -43,10 +43,9 @@ public class ItemRepositoryImpl implements ItemRepository {
     }
 
     @Override
-    public Item updateItemById(Item item, Long itemId, Long userId) {
+    public void updateItemById(Item item, Long itemId, Long userId) {
         items.put(itemId, item);
         log.info("Item with id = {} has been updated in Repository", itemId);
-        return getItemById(itemId, userId).get();
     }
 
     @Override

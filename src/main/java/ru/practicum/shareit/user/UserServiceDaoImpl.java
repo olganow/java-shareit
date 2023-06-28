@@ -40,7 +40,7 @@ public class UserServiceDaoImpl implements UserService {
 
     @Override
     public UserDto getUserById(Long id) {
-        Optional<User> user = repository.getUserById(id);
+        Optional<User> user = Optional.of(repository.getUserById(id));
         if (user.equals(null)) {
             log.info("User with id = {} isn't found", id);
             throw new NotFoundException("User with id = " + id + "doesn't exist");
@@ -65,7 +65,8 @@ public class UserServiceDaoImpl implements UserService {
             user.setEmail(userDto.getEmail());
         }
         log.info("User with id = {} is updated", user.getId());
-        return userMapper.userToUserDto(repository.updateUserById(user, id));
+        repository.updateUserById(user, id);
+        return userMapper.userToUserDto(user);
     }
 
     @Override

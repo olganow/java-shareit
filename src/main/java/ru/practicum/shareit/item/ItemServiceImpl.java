@@ -23,7 +23,7 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public ItemDto createItem(ItemDto itemDto, Long userId) {
-        Optional<User> user = userRepository.getUserById(userId);
+        Optional<User> user = Optional.of(userRepository.getUserById(userId));
         if (user.isEmpty()) {
             log.info("User with id = {} ", userId);
             throw new NotFoundException("User with id = " + userId + " doesn't exist");
@@ -72,8 +72,9 @@ public class ItemServiceImpl implements ItemService {
         if (itemDto.getAvailable() != null) {
             updatedItem.setAvailable(itemDto.getAvailable());
         }
+        itemRepository.updateItemById(updatedItem, itemId, userId);
         log.info("Item with id = {} has been updated", itemId);
-        return itemMapper.itemToItemDto(itemRepository.updateItemById(updatedItem, itemId, userId));
+        return itemMapper.itemToItemDto(updatedItem);
     }
 
     @Override

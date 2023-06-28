@@ -8,10 +8,9 @@ public interface UserRepository {
 
     List<User> getAllUsers();
 
-    Optional<User> getUserById(Long userId);
+    User getUserById(Long userId);
 
-
-    User updateUserById(User user, Long userId);
+    void updateUserById(User user, Long userId);
 
     Optional<User> removeUserById(Long userId);
 

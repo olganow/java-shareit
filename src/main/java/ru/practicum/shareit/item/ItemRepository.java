@@ -13,7 +13,7 @@ public interface ItemRepository {
 
     Optional<Item> getItemById(Long itemId, Long userId);
 
-    Item updateItemById(Item item, Long itemId, Long userId);
+    void updateItemById(Item item, Long itemId, Long userId);
 
     List<Item> searchItemByText(String text, Long userId);
 
