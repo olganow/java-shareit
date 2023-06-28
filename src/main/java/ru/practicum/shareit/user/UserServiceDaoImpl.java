@@ -51,7 +51,7 @@ public class UserServiceDaoImpl implements UserService {
 
     @Override
     public UserDto updateUserById(Long id, UserDto userDto) {
-        User user = userMapper.userDtotoUser(getUserById(id));
+        User user = repository.getUserById(id);
         if (userDto.getName() != null && !userDto.getName().isBlank()) {
             user.setName(userDto.getName());
         }

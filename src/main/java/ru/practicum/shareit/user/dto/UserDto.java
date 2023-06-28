@@ -15,8 +15,7 @@ public class UserDto {
     @NotBlank(groups = Marker.OnCreate.class)
     private String name;
 
-    @Email(groups = Marker.OnCreate.class)
-    @Email(groups = Marker.OnUpdate.class)
+    @Email(groups = {Marker.OnCreate.class, Marker.OnUpdate.class})
     @NotEmpty(groups = Marker.OnCreate.class)
     private String email;
 }
