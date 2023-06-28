@@ -64,8 +64,8 @@ public class UserServiceDaoImpl implements UserService {
             }
             user.setEmail(userDto.getEmail());
         }
-        log.info("User with id = {} is updated", user.getId());
         repository.updateUserById(user, id);
+        log.info("User with id = {} is updated", user.getId());
         return userMapper.userToUserDto(user);
     }
 
