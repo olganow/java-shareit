@@ -53,23 +53,22 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public ItemDto updateItemById(ItemDto itemDto, Long itemId, Long userId) {
-        Item updatedItem = itemMapper.itemDtoToItem(getItemById(itemId, userId));
-        if (!updatedItem.getOwner().getId().equals(userId)) {
+        Optional<Item> updatedItem = itemRepository.getItemById(itemId, userId);
+        if (!updatedItem.get().getOwner().getId().equals(userId)) {
             log.info("Item with id = {} doesn't found", itemId);
             throw new NotFoundException("Item with id " + itemId + " doesn't found");
         }
         if (itemDto.getName() != null && !itemDto.getName().isBlank()) {
-            updatedItem.setName(itemDto.getName());
+            updatedItem.get().setName(itemDto.getName());
         }
         if (itemDto.getDescription() != null && !itemDto.getDescription().isBlank()) {
-            updatedItem.setDescription(itemDto.getDescription());
+            updatedItem.get().setDescription(itemDto.getDescription());
         }
         if (itemDto.getAvailable() != null) {
-            updatedItem.setAvailable(itemDto.getAvailable());
+            updatedItem.get().setAvailable(itemDto.getAvailable());
         }
-        itemRepository.updateItemById(updatedItem, itemId, userId);
         log.info("Item with id = {} has been updated", itemId);
-        return itemMapper.itemToItemDto(updatedItem);
+        return itemMapper.itemToItemDto(updatedItem.get());
     }
 
     @Override
