@@ -23,15 +23,11 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public ItemDto createItem(ItemDto itemDto, Long userId) {
-        Optional<User> user = Optional.of(userRepository.getUserById(userId));
-        if (user.isEmpty()) {
-            log.info("User with id = {} ", userId);
-            throw new NotFoundException("User with id = " + userId + " doesn't exist");
-        }
+        User user = userRepository.getUserById(userId);
         Item item = itemMapper.itemDtoToItem(itemDto);
-        item.setOwner(user.get());
+        item.setOwner(user);
         log.info("Item with id = {} has been created", item.getId());
-        return itemMapper.itemToItemDto(itemRepository.createItem(item, user.get()));
+        return itemMapper.itemToItemDto(itemRepository.createItem(item, user));
     }
 
     @Override
@@ -57,17 +53,16 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public ItemDto updateItemById(ItemDto itemDto, Long itemId, Long userId) {
-        userRepository.getUserById(userId);
         Item updatedItem = itemMapper.itemDtoToItem(getItemById(itemId, userId));
+        if (!updatedItem.getOwner().getId().equals(userId)) {
+            log.info("Item with id = {} doesn't found", itemId);
+            throw new NotFoundException("Item with id " + itemId + " doesn't found");
+        }
         if (itemDto.getName() != null && !itemDto.getName().isBlank()) {
             updatedItem.setName(itemDto.getName());
         }
         if (itemDto.getDescription() != null && !itemDto.getDescription().isBlank()) {
             updatedItem.setDescription(itemDto.getDescription());
-        }
-        if (!updatedItem.getOwner().getId().equals(userId)) {
-            log.info("Item with id = {} doesn't found", itemId);
-            throw new NotFoundException("Item with id " + itemId + " doesn't found");
         }
         if (itemDto.getAvailable() != null) {
             updatedItem.setAvailable(itemDto.getAvailable());
@@ -79,10 +74,10 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public List<ItemDto> searchItemByText(String text, Long userId) {
-        List<ItemDto> items = new ArrayList<>();
-        if (text.isEmpty()) {
-            return items;
+        if (text.isBlank()) {
+            return List.of();
         }
+        List<ItemDto> items = new ArrayList<>();
         for (Item item : itemRepository.searchItemByText(text, userId)) {
             items.add(itemMapper.itemToItemDto(item));
         }
@@ -93,16 +88,18 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public ItemDto removeItemById(Long itemId, Long userId) {
         userRepository.getUserById(userId);
-        Optional<Item> optionalItem = itemRepository.removeItemById(itemId, userId);
-        if (optionalItem.isEmpty()) {
-            log.info("Item with id = {} doesn't found", itemId);
-            throw new NotFoundException("Item with id " + itemId + " doesn't found");
-        }
+        Optional<Item> optionalItem = itemRepository.getItemById(itemId, userId);
+
         if (!optionalItem.get().getOwner().getId().equals(userId)) {
             log.info("User with id ={} doesn't have item with id = {}, this item can't remove", userId, itemId);
             throw new NotFoundException("User with id = " + userId + " doesn't have item with id = " + itemId);
         }
+        if (optionalItem.isEmpty()) {
+            log.info("Item with id = {} doesn't found", itemId);
+            throw new NotFoundException("Item with id " + itemId + " doesn't found");
+        }
         log.info("Item with id = {} has been removed", itemId);
+        optionalItem = itemRepository.removeItemById(itemId, userId);
         return itemMapper.itemToItemDto(optionalItem.get());
     }
 }

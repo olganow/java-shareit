@@ -7,7 +7,6 @@ import ru.practicum.shareit.exception.NotFoundException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 @Repository
 @Slf4j
@@ -38,23 +37,9 @@ public class UserRepositoryDaoImpl implements UserRepository {
         return users.get(id);
     }
 
-
     @Override
-    public void updateUserById(User user, Long id) {
-        if (!users.containsKey(id)) {
-            throw new NotFoundException("User with id =" + id + "doesn't exist");
-        }
-        users.put(id, user);
-        log.info("User with id = {} is updated in Repository", id);
-    }
-
-    @Override
-    public Optional<User> removeUserById(Long id) {
-        Optional<User> memoryUser = Optional.of(getUserById(id));
-        if (memoryUser.isEmpty()) {
-            log.info("User with email with id = {} is not found and can't be removed ", id);
-            return Optional.empty();
-        }
+    public User removeUserById(Long id) {
+        User memoryUser = getUserById(id);
         users.remove(id);
         log.info("User with id = {} removed", id);
         return memoryUser;
