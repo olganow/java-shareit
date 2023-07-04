@@ -26,7 +26,6 @@ create TABLE IF NOT EXISTS items(
     is_available BOOLEAN,
     owner_id     BIGINT REFERENCES users (user_id),
     request_id   BIGINT REFERENCES requests (request_id)
-    CONSTRAINT exist_user_name UNIQUE (name)
 );
 
 create TABLE IF NOT EXISTS bookings(

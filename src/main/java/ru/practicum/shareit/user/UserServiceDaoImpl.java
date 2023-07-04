@@ -3,11 +3,14 @@ package ru.practicum.shareit.user;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import ru.practicum.shareit.exception.ValidateException;
+import ru.practicum.shareit.exception.NotFoundException;
+import ru.practicum.shareit.item.ItemRepository;
 import ru.practicum.shareit.user.dto.UserDto;
 
-import java.util.ArrayList;
+import javax.transaction.Transactional;
 import java.util.List;
+import java.util.Optional;
+
 
 @Service
 @Slf4j
@@ -15,57 +18,49 @@ import java.util.List;
 public class UserServiceDaoImpl implements UserService {
     private final UserRepository repository;
     private final UserMapper userMapper;
+    private final ItemRepository itemRepository;
 
     @Override
     public UserDto createUser(UserDto userDto) {
         User user = userMapper.userDtotoUser(userDto);
-        if (repository.isEmailExisted(user.getEmail())) {
-            throw new ValidateException("User with email = " + userDto.getEmail() + " exists");
-        }
         log.info("User with email = {}  has been created", userDto.getEmail());
-        return userMapper.userToUserDto(repository.createUser(user));
+        return userMapper.userToUserDto(repository.save(user));
     }
 
     @Override
-    public List<UserDto> getAllUsers() {
-        List<UserDto> usersDto = new ArrayList<>();
-        for (User user : repository.getAllUsers()) {
-            usersDto.add(userMapper.userToUserDto(user));
-        }
+    public List<User> getAllUsers() {
         log.info("Get all user");
-        return usersDto;
+        return List.copyOf(repository.findAll());
     }
 
     @Override
     public UserDto getUserById(Long id) {
-        User user = repository.getUserById(id);
+        User user = repository.findById(id).orElseThrow(() -> new NotFoundException("User not found"));
         log.info("User with id = {} is uploaded", id);
         return userMapper.userToUserDto(user);
     }
 
     @Override
     public UserDto updateUserById(Long id, UserDto userDto) {
-        User user = repository.getUserById(id);
+        Optional<User> user = repository.findById(id);
         if (userDto.getName() != null && !userDto.getName().isBlank()) {
-            user.setName(userDto.getName());
+            user.get().setName(userDto.getName());
         }
         if (userDto.getEmail() != null && !userDto.getEmail().isEmpty()) {
-            if (repository.isEmailExisted(userDto.getEmail())) {
-                if (!userDto.getEmail().equals(user.getEmail())) {
-                    log.info("User with email with id = {} exists", user.getId());
-                    throw new ValidateException("User with email " + userDto.getEmail() + " exists");
-                }
-            }
-            user.setEmail(userDto.getEmail());
+            user.get().setEmail(userDto.getEmail());
         }
-        log.info("User with id = {} is updated", user.getId());
-        return userMapper.userToUserDto(user);
+        log.info("User with id = {} is updated", userDto.getId());
+        return userMapper.userToUserDto(repository.save(user.get()));
     }
 
+    @Transactional
     @Override
-    public UserDto removeUserById(Long id) {
-        User user = repository.removeUserById(id);
+    public Boolean removeUserById(Long id) {
+        if (repository.existsById(id)) {
+            itemRepository.deleteAll(itemRepository.findAllByOwnerId(id));
+            repository.deleteById(id);
+        }
         log.info("User with id = {} removed", id);
-        return userMapper.userToUserDto(user);
+        return !repository.existsById(id);
     }
 }
