@@ -17,7 +17,7 @@ public class BookingController {
     @PostMapping()
     public BookingDto addBooking(@RequestHeader("X-Sharer-User-Id") Long id,
                                  @Valid @RequestBody BookingEntryDto bookingDto) throws ValidationException {
-        return bookingService.addBooking(id, bookingDto);
+        return bookingService.createBooking(id, bookingDto);
     }
 
     @GetMapping("/{bookingId}")
@@ -33,8 +33,8 @@ public class BookingController {
     }
 
     @GetMapping("/owner")
-    public List<BookingDto> getAllItemsBookingsByUserID(@RequestHeader("X-Sharer-User-Id") Long id,
-                                                        @RequestParam(defaultValue = "ALL") String state) {
+    public List<BookingDto> getAllOwnersBookingByState(@RequestHeader("X-Sharer-User-Id") Long id,
+                                                       @RequestParam(defaultValue = "ALL") String state) {
         return bookingService.getAllOwnersBookingByState(id, state);
     }
 

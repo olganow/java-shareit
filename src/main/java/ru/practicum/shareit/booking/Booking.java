@@ -8,15 +8,14 @@ import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.User;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
 @Data
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
 @Entity
-@Table(name = "bookings", schema = "public")
+@Table(name = "bookings")
 public class Booking {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -30,15 +29,13 @@ public class Booking {
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "itemId")
-    @NotNull
     private Item item;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "bookerId")
-    @NotNull
     private User booker;
 
+    @Enumerated(EnumType.STRING)
     @Column
-    private String status;
+    private Status status;
 }
-
