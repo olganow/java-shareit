@@ -20,11 +20,11 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @NotNull
-    @Column
+    @Column(length = 100)
     private String name;
 
     @Email
     @NotNull
-    @Column
+    @Column(length = 100, unique = true)
     private String email;
 }

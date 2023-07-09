@@ -19,10 +19,10 @@ public class Item {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column
+    @Column(length = 100)
     private String name;
 
-    @Column
+    @Column(length = 200)
     private String description;
 
     @Column(name = "is_available")

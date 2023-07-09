@@ -7,7 +7,6 @@ import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.item.ItemRepository;
 import ru.practicum.shareit.user.dto.UserDto;
 
-import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
 
@@ -35,7 +34,8 @@ public class UserServiceDaoImpl implements UserService {
 
     @Override
     public UserDto getUserById(Long id) {
-        User user = repository.findById(id).orElseThrow(() -> new NotFoundException("User not found"));
+        User user = repository.findById(id).orElseThrow(() ->
+                new NotFoundException("User with id = "+ id +" has not found"));
         log.info("User with id = {} is uploaded", id);
         return userMapper.userToUserDto(user);
     }
@@ -53,7 +53,6 @@ public class UserServiceDaoImpl implements UserService {
         return userMapper.userToUserDto(repository.save(user.get()));
     }
 
-    @Transactional
     @Override
     public Boolean removeUserById(Long id) {
         if (repository.existsById(id)) {
