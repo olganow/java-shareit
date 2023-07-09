@@ -13,9 +13,9 @@ import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.UserRepository;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static ru.practicum.shareit.booking.BookingMapper.bookingToBookingDto;
 
@@ -97,7 +97,13 @@ public class BookingServiceImpl implements BookingService {
             default:
                 bookingList = Collections.emptyList();
         }
-        return bookingList.stream().map(BookingMapper::bookingToBookingDto).collect(Collectors.toList());
+
+        List<BookingDto> bookingDto = new ArrayList<>();
+        for (Booking booking : bookingList) {
+            bookingDto.add(BookingMapper.bookingToBookingDto(booking));
+        }
+        log.info("Get booking with state  = {}", state);
+        return bookingDto;
     }
 
     public List<BookingDto> getAllOwnersBookingByState(Long id, String stateString) {
@@ -129,7 +135,12 @@ public class BookingServiceImpl implements BookingService {
                 bookingList = Collections.emptyList();
         }
 
-        return bookingList.stream().map(BookingMapper::bookingToBookingDto).collect(Collectors.toList());
+        List<BookingDto> bookingDtos = new ArrayList<>();
+        for (Booking booking : bookingList) {
+            bookingDtos.add(BookingMapper.bookingToBookingDto(booking));
+        }
+        log.info("Get all owners booking with state  = {}", state);
+        return bookingDtos;
     }
 
     @Override
@@ -148,7 +159,7 @@ public class BookingServiceImpl implements BookingService {
         } else {
             booking.setStatus(Status.REJECTED);
         }
-
+        log.info("Get approve booking with id  = {}", bookingId);
         return bookingToBookingDto(bookingRepository.save(booking));
     }
 
