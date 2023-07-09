@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.exception.NotAvailableException;
 import ru.practicum.shareit.exception.NotFoundException;
-import ru.practicum.shareit.exception.NotValidException;
+import ru.practicum.shareit.exception.NotSupportedStateException;
 import ru.practicum.shareit.item.ItemRepository;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.UserRepository;
@@ -156,7 +156,7 @@ public class BookingServiceImpl implements BookingService {
         try {
             return State.valueOf(state.toUpperCase());
         } catch (Exception e) {
-            throw new NotValidException("Unknown state: " + state);
+            throw new NotSupportedStateException("Unknown state: " + state);
         }
     }
 

@@ -21,6 +21,7 @@ public class ErrorHandler {
         return new ErrorResponse("Not Found Exception", e.getMessage());
     }
 
+    @ExceptionHandler
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorResponse handleServerErrorException(Throwable e) {
         log.debug("Server error {}: {},", e.getClass(), e.getMessage());
@@ -37,4 +38,23 @@ public class ErrorHandler {
                         e -> (e.getDefaultMessage() == null) ? "validation error" : e.getDefaultMessage()
                 ));
     }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleWrongState(final NotSupportedStateException e) {
+        return new ErrorResponse(e.getMessage(), e.getMessage());
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse notAvailableException(final NotAvailableException e) {
+        return new ErrorResponse("Available error", e.getMessage());
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public ErrorResponse duplicateException(final CloneNotSupportedException e) {
+        return new ErrorResponse("Duplicate error", e.getMessage());
+    }
+
 }

@@ -35,7 +35,7 @@ public class UserServiceDaoImpl implements UserService {
     @Override
     public UserDto getUserById(Long id) {
         User user = repository.findById(id).orElseThrow(() ->
-                new NotFoundException("User with id = "+ id +" has not found"));
+                new NotFoundException("User with id = " + id + " has not found"));
         log.info("User with id = {} is uploaded", id);
         return userMapper.userToUserDto(user);
     }
