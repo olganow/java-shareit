@@ -3,6 +3,7 @@ package ru.practicum.shareit.user;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.item.ItemRepository;
 import ru.practicum.shareit.user.dto.UserDto;
@@ -14,6 +15,7 @@ import java.util.Optional;
 @Service
 @Slf4j
 @RequiredArgsConstructor
+@Transactional
 public class UserServiceDaoImpl implements UserService {
     private final UserRepository repository;
     private final UserMapper userMapper;
@@ -26,12 +28,14 @@ public class UserServiceDaoImpl implements UserService {
         return userMapper.userToUserDto(repository.save(user));
     }
 
+    @Transactional(readOnly = true)
     @Override
     public List<User> getAllUsers() {
         log.info("Get all user");
         return List.copyOf(repository.findAll());
     }
 
+    @Transactional(readOnly = true)
     @Override
     public UserDto getUserById(Long id) {
         User user = repository.findById(id).orElseThrow(() ->
@@ -50,7 +54,7 @@ public class UserServiceDaoImpl implements UserService {
             user.get().setEmail(userDto.getEmail());
         }
         log.info("User with id = {} is updated", userDto.getId());
-        return userMapper.userToUserDto(repository.save(user.get()));
+        return userMapper.userToUserDto(repository.saveAndFlush(user.get()));
     }
 
     @Override
