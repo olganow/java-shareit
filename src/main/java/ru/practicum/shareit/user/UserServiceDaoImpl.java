@@ -26,7 +26,13 @@ public class UserServiceDaoImpl implements UserService {
     public UserDto createUser(UserDto userDto) {
         User user = userMapper.userDtotoUser(userDto);
         log.info("User with email = {}  has been created", userDto.getEmail());
-        return userMapper.userToUserDto(repository.save(user));
+        try {
+            return userMapper.userToUserDto(repository.save(user));
+        } catch (DataIntegrityViolationException e) {
+            throw new AlreadyExistsException(String.format(
+                    "User %s has been registrated yet", userDto.getEmail()
+            ));
+        }
     }
 
     @Transactional(readOnly = true)
