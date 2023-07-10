@@ -57,4 +57,9 @@ public class ErrorHandler {
         return new ErrorResponse("Duplicate error", e.getMessage());
     }
 
+    @ExceptionHandler({AlreadyExistsException.class})
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public ErrorResponse alreadyExistsException(final RuntimeException e) {
+        return new ErrorResponse("Already exists error", e.getMessage());
+    }
 }
