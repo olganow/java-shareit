@@ -46,7 +46,6 @@ public class UserServiceDaoImpl implements UserService {
     }
 
     @Override
-    @Transactional
     public UserDto updateUserById(Long id, UserDto userDto) {
         User user = repository.findById(id).orElseThrow(() -> new NotFoundException("Error"));
         if (userDto.getName() != null && !userDto.getName().isBlank()) {
