@@ -4,6 +4,7 @@ package ru.practicum.shareit.item;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.BookingMapper;
 import ru.practicum.shareit.booking.BookingRepository;
 import ru.practicum.shareit.booking.Status;
@@ -18,7 +19,6 @@ import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.UserMapper;
 import ru.practicum.shareit.user.UserService;
 
-import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -27,25 +27,26 @@ import java.util.Optional;
 import static ru.practicum.shareit.item.ItemMapper.itemDtoToItem;
 import static ru.practicum.shareit.item.ItemMapper.itemToItemDto;
 import static ru.practicum.shareit.item.comment.CommentMapper.commentToCommentDto;
+import static ru.practicum.shareit.user.UserMapper.userDtotoUser;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class ItemServiceImpl implements ItemService {
     private final ItemRepository itemRepository;
     private final BookingRepository bookingRepository;
     private final CommentRepository commentRepository;
     private final UserService userService;
-    private final UserMapper userMapper;
 
-    @Transactional
 
     public ItemDto createItem(ItemDto itemDto, Long userId) {
-        itemDto.setOwner(userMapper.userDtotoUser(userService.getUserById(userId)));
+        itemDto.setOwner(userDtotoUser(userService.getUserById(userId)));
         log.info("Item with id = {} has been created", itemDto.getId());
         return itemToItemDto(itemRepository.save(itemDtoToItem(itemDto)));
     }
 
+    @Transactional(readOnly = true)
     @Override
     public List<ItemDto> getAllItems(Long userId) {
         List<ItemDto> items = new ArrayList<>();
@@ -60,6 +61,7 @@ public class ItemServiceImpl implements ItemService {
         return items;
     }
 
+    @Transactional(readOnly = true)
     @Override
     public ItemDto getItemById(Long itemId, Long userId) {
         ItemDto item = itemToItemDto(itemRepository.findById(itemId).orElseThrow(()
@@ -91,8 +93,10 @@ public class ItemServiceImpl implements ItemService {
     }
 
 
+    @Transactional(readOnly = true)
     @Override
-    public List<ItemDto> searchItemByText(String text) {
+    public List<ItemDto> searchItemByText(String stringText) {
+        String text = stringText.toLowerCase();
         if (text.isBlank()) {
             return List.of();
         }
@@ -121,12 +125,12 @@ public class ItemServiceImpl implements ItemService {
                 .builder()
                 .text(commentDto.getText())
                 .build();
-        comment.setAuthor(userMapper.userDtotoUser(userService.getUserById(userId)));
+        comment.setAuthor(userDtotoUser(userService.getUserById(userId)));
 
         comment.setItem((itemRepository.findById(itemId)
                 .orElseThrow(() -> new NotFoundException("Item  hasn't be found"))));
 
-        comment.setAuthor(userMapper.userDtotoUser(userService.getUserById(userId)));
+        comment.setAuthor(userDtotoUser(userService.getUserById(userId)));
         if (!bookingRepository.existsByBookerIdAndEndBeforeAndStatus(userId, LocalDateTime.now(), Status.APPROVED)) {
             throw new NotAvailableException("Comment can't be created");
         }

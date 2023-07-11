@@ -42,24 +42,28 @@ public class ErrorHandler {
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleWrongState(final NotSupportedStateException e) {
+        log.debug("Not found error: {}", e.getMessage());
         return new ErrorResponse(e.getMessage(), e.getMessage());
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse notAvailableException(final NotAvailableException e) {
+        log.debug("Not found error: {}", e.getMessage());
         return new ErrorResponse("Available error", e.getMessage());
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.CONFLICT)
     public ErrorResponse duplicateException(final CloneNotSupportedException e) {
+        log.debug("Not found error: {}", e.getMessage());
         return new ErrorResponse("Duplicate error", e.getMessage());
     }
 
     @ExceptionHandler({AlreadyExistsException.class})
     @ResponseStatus(HttpStatus.CONFLICT)
     public ErrorResponse alreadyExistsException(final RuntimeException e) {
+        log.debug("Not found error: {}", e.getMessage());
         return new ErrorResponse("Already exists error", e.getMessage());
     }
 }

@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.exception.NotAvailableException;
 import ru.practicum.shareit.exception.NotFoundException;
@@ -12,21 +13,25 @@ import ru.practicum.shareit.item.ItemRepository;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.UserRepository;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static ru.practicum.shareit.booking.BookingMapper.bookingToBookingDto;
+import static ru.practicum.shareit.util.Constants.SORT_BY_DESC;
+
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
+@Transactional
 public class BookingServiceImpl implements BookingService {
     private final BookingRepository bookingRepository;
     private final UserRepository userRepository;
     private final ItemRepository itemRepository;
-    private static final Sort SORT_BY_DESC = Sort.by(Sort.Direction.DESC, "start");
 
     @Override
     public BookingDto createBooking(Long id, BookingEntryDto bookingDto) {
@@ -58,6 +63,7 @@ public class BookingServiceImpl implements BookingService {
         return bookingToBookingDto(bookingRepository.save(booking));
     }
 
+    @Transactional(readOnly = true)
     @Override
     public BookingDto getBookingById(Long id, Long bookingId) {
         validateUser(id);
@@ -68,6 +74,7 @@ public class BookingServiceImpl implements BookingService {
         return bookingToBookingDto(booking);
     }
 
+    @Transactional(readOnly = true)
     @Override
     public List<BookingDto> getAllBookingByState(Long id, String stateString) {
         validateUser(id);
@@ -98,14 +105,14 @@ public class BookingServiceImpl implements BookingService {
                 bookingList = Collections.emptyList();
         }
 
-        List<BookingDto> bookingDto = new ArrayList<>();
-        for (Booking booking : bookingList) {
-            bookingDto.add(BookingMapper.bookingToBookingDto(booking));
-        }
         log.info("Get booking with state  = {}", state);
-        return bookingDto;
+        return bookingList.stream()
+                .map(BookingMapper::bookingToBookingDto)
+                .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
+    @Override
     public List<BookingDto> getAllOwnersBookingByState(Long id, String stateString) {
         validateUser(id);
         List<Booking> bookingList;
@@ -135,12 +142,11 @@ public class BookingServiceImpl implements BookingService {
                 bookingList = Collections.emptyList();
         }
 
-        List<BookingDto> bookingDtos = new ArrayList<>();
-        for (Booking booking : bookingList) {
-            bookingDtos.add(BookingMapper.bookingToBookingDto(booking));
-        }
+
         log.info("Get all owners booking with state  = {}", state);
-        return bookingDtos;
+        return bookingList.stream()
+                .map(BookingMapper::bookingToBookingDto)
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -166,7 +172,7 @@ public class BookingServiceImpl implements BookingService {
     private State validateState(String state) {
         try {
             return State.valueOf(state.toUpperCase());
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             throw new NotSupportedStateException("Unknown state: " + state);
         }
     }
