@@ -11,6 +11,7 @@ import ru.practicum.shareit.item.ItemRepository;
 import ru.practicum.shareit.user.dto.UserDto;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static ru.practicum.shareit.user.UserMapper.userDtotoUser;
 import static ru.practicum.shareit.user.UserMapper.userToUserDto;
@@ -32,16 +33,19 @@ public class UserServiceDaoImpl implements UserService {
             return userToUserDto(repository.save(user));
         } catch (DataIntegrityViolationException e) {
             throw new AlreadyExistsException(String.format(
-                    "User %s has been registrated yet", userDto.getEmail()
+                    "User %s has been registered yet", userDto.getEmail()
             ));
         }
     }
 
     @Transactional(readOnly = true)
     @Override
-    public List<User> getAllUsers() {
+    public List<UserDto> getAllUsers() {
         log.info("Get all user");
-        return List.copyOf(repository.findAll());
+        return repository.findAll()
+                .stream()
+                .map(UserMapper::userToUserDto)
+                .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
