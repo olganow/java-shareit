@@ -11,18 +11,17 @@ import ru.practicum.shareit.booking.Status;
 import ru.practicum.shareit.exception.NotAvailableException;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.item.comment.Comment;
-import ru.practicum.shareit.item.comment.CommentMapper;
 import ru.practicum.shareit.item.comment.CommentDto;
+import ru.practicum.shareit.item.comment.CommentMapper;
 import ru.practicum.shareit.item.comment.CommentRepository;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.user.UserMapper;
 import ru.practicum.shareit.user.UserService;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static ru.practicum.shareit.item.ItemMapper.itemDtoToItem;
 import static ru.practicum.shareit.item.ItemMapper.itemToItemDto;
@@ -49,14 +48,14 @@ public class ItemServiceImpl implements ItemService {
     @Transactional(readOnly = true)
     @Override
     public List<ItemDto> getAllItems(Long userId) {
-        List<ItemDto> items = new ArrayList<>();
-        for (Item item : itemRepository.findAllByOwnerId(userId)) {
-            items.add(itemToItemDto(item));
-        }
-        for (ItemDto item : items) {
+        List<Item> itemList = (List<Item>) itemRepository.findAllByOwnerId(userId);
+        List<ItemDto> items = itemList.stream().map(ItemMapper::itemToItemDto).collect(Collectors.toList());
+
+        items.forEach(item -> {
             item.setComments(getComments(item.getId()));
             setBookings(item, userId);
-        }
+        });
+
         log.info("Get all items");
         return items;
     }
@@ -100,23 +99,20 @@ public class ItemServiceImpl implements ItemService {
         if (text.isBlank()) {
             return List.of();
         }
-        List<ItemDto> items = new ArrayList<>();
-        for (Item item : itemRepository.findByNameOrDescriptionAndAvailable(text)) {
-            items.add(itemToItemDto(item));
-        }
-        log.info("Item with text = '{}' has been found", text);
-        return items;
+        return itemRepository.findByNameOrDescriptionAndAvailable(text)
+                .stream()
+                .peek(item -> setBookings(itemToItemDto(item), item.getOwner().getId()))
+                .map(ItemMapper::itemToItemDto)
+                .collect(Collectors.toList());
     }
 
 
-    public List<CommentDto> getComments(Long itemId) {
+    private List<CommentDto> getComments(Long itemId) {
         List<Comment> comments = commentRepository.findByItemId(itemId);
-        List<CommentDto> commentDto = new ArrayList<>();
-        for (Comment comment : comments) {
-            commentDto.add(CommentMapper.commentToCommentDto(comment));
-        }
         log.info("Get all comments");
-        return commentDto;
+        return comments.stream()
+                .map(CommentMapper::commentToCommentDto)
+                .collect(Collectors.toList());
     }
 
     @Override

@@ -28,7 +28,7 @@ public class Item {
     @Column(name = "is_available")
     private Boolean available;
 
-    @OneToOne(fetch = FetchType.EAGER)
+    @OneToOne
     @JoinColumn(name = "ownerId")
     private User owner;
 
