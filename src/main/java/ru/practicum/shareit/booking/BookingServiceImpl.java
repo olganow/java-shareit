@@ -9,7 +9,6 @@ import ru.practicum.shareit.booking.dto.BookingMapper;
 import ru.practicum.shareit.booking.dto.BookingShortDto;
 import ru.practicum.shareit.exception.NotAvailableException;
 import ru.practicum.shareit.exception.NotFoundException;
-import ru.practicum.shareit.exception.NotSupportedStateException;
 import ru.practicum.shareit.item.ItemRepository;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.UserRepository;
@@ -19,6 +18,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static ru.practicum.shareit.booking.State.validateState;
 import static ru.practicum.shareit.booking.dto.BookingMapper.bookingToBookingDto;
 import static ru.practicum.shareit.booking.dto.BookingMapper.bookingToBookingShortDto;
 import static ru.practicum.shareit.util.Constants.SORT_BY_DESC;
@@ -165,14 +165,6 @@ public class BookingServiceImpl implements BookingService {
         }
         log.info("Get approve booking with id  = {}", bookingId);
         return bookingToBookingDto(bookingRepository.save(booking));
-    }
-
-    private State validateState(String state) {
-        try {
-            return State.valueOf(state.toUpperCase());
-        } catch (RuntimeException e) {
-            throw new NotSupportedStateException("Unknown state: " + state);
-        }
     }
 
     private Booking validateBooking(Long bookingId) {

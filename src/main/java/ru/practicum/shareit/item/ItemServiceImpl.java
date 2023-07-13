@@ -81,7 +81,7 @@ public class ItemServiceImpl implements ItemService {
                 .collect(Collectors.groupingBy(CommentDto::getId));
         itemDtoList.forEach(i -> i.setComments(comments.get(i.getId())));
         itemDtoList.sort(comparing(ItemDto::getId));
-
+        log.info("Get all items");
         return itemDtoList;
     }
 
