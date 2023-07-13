@@ -5,6 +5,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.dto.BookingDto;
+import ru.practicum.shareit.booking.dto.BookingMapper;
+import ru.practicum.shareit.booking.dto.BookingShortDto;
 import ru.practicum.shareit.exception.NotAvailableException;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.exception.NotSupportedStateException;
@@ -17,7 +19,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static ru.practicum.shareit.booking.BookingMapper.bookingToBookingDto;
+import static ru.practicum.shareit.booking.dto.BookingMapper.bookingToBookingDto;
+import static ru.practicum.shareit.booking.dto.BookingMapper.bookingToBookingShortDto;
 import static ru.practicum.shareit.util.Constants.SORT_BY_DESC;
 
 
@@ -31,32 +34,30 @@ public class BookingServiceImpl implements BookingService {
     private final ItemRepository itemRepository;
 
     @Override
-    public BookingDto createBooking(Long id, BookingEntryDto bookingDto) {
-        Item item = itemRepository.findById(bookingDto.getItemId()).orElseThrow(() ->
-                new NotFoundException("Item with id= " + id + " hasn't not found"));
+    public BookingDto createBooking(Long userId, BookingShortDto bookingShortDto) {
+        Item item = itemRepository.findById(bookingShortDto.getItemId()).orElseThrow(() ->
+                new NotFoundException("Item with id= " + userId + " hasn't not found"));
+        userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException("Not possible create Booking - " +
+                        "Not found User with Id " + userId));
 
-        if (bookingDto.getStart().isEqual(bookingDto.getEnd()) ||
-                bookingDto.getStart().isAfter(bookingDto.getEnd())) {
+        if (bookingShortDto.getStart().isEqual(bookingShortDto.getEnd()) ||
+                bookingShortDto.getStart().isAfter(bookingShortDto.getEnd())) {
             throw new NotAvailableException("The end day can't be earlier than the start day");
         }
-        if (id.equals(item.getOwner().getId())) {
-            throw new NotFoundException("Your own item with id= " + id + " can't book");
+        if (userId.equals(item.getOwner().getId())) {
+            throw new NotFoundException("Your own item with id= " + userId + " can't book");
         }
         if (!item.getAvailable()) {
-            throw new NotAvailableException("Item with id= " + id + " isn't not available");
+            throw new NotAvailableException("Item with id= " + userId + " isn't not available");
         }
 
-        Booking booking = Booking
-                .builder()
-                .start(bookingDto.getStart())
-                .end(bookingDto.getEnd())
-                .build();
-
-        booking.setBooker(userRepository.findById(id).orElseThrow(()
-                -> new NotFoundException("User with id= " + id + " hasn't not found")));
-
+        Booking booking = bookingToBookingShortDto(bookingShortDto);
+        booking.setBooker(userRepository.findById(userId).orElseThrow(()
+                -> new NotFoundException("User with id= " + userId + " hasn't not found")));
         booking.setItem(item);
         booking.setStatus(Status.WAITING);
+
         return bookingToBookingDto(bookingRepository.save(booking));
     }
 
