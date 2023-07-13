@@ -29,7 +29,7 @@ public class ItemMapper {
                 .build();
     }
 
-    public static ItemDto ItemShortDtoToItemDto(ItemShortDto itemShortDto) {
+    public static ItemDto itemShortDtoToItemDto(ItemShortDto itemShortDto) {
         return ItemDto.builder()
                 .id(itemShortDto.getId())
                 .name(itemShortDto.getName())
@@ -39,7 +39,7 @@ public class ItemMapper {
                 .build();
     }
 
-    public static Item ItemShortDtoToItem(ItemShortDto itemShortDto) {
+    public static Item itemShortDtoToItem(ItemShortDto itemShortDto) {
         return Item.builder()
                 .id(itemShortDto.getId())
                 .name(itemShortDto.getName())

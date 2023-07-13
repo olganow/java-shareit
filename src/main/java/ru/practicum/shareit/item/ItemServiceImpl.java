@@ -3,8 +3,10 @@ package ru.practicum.shareit.item;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.practicum.shareit.booking.dto.BookingItemDto;
 import ru.practicum.shareit.booking.dto.BookingMapper;
 import ru.practicum.shareit.booking.BookingRepository;
 import ru.practicum.shareit.booking.Status;
@@ -21,10 +23,15 @@ import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.UserService;
 
 import java.time.LocalDateTime;
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import static java.util.Comparator.comparing;
+import static org.springframework.data.domain.Sort.Direction.DESC;
 import static ru.practicum.shareit.item.comment.CommentMapper.commentToCommentDto;
 import static ru.practicum.shareit.item.dto.ItemMapper.*;
 import static ru.practicum.shareit.user.UserMapper.userDtotoUser;
@@ -41,7 +48,7 @@ public class ItemServiceImpl implements ItemService {
 
 
     public ItemDto createItem(ItemShortDto itemShortDto, Long userId) {
-        ItemDto itemDto = ItemShortDtoToItemDto(itemShortDto);
+        ItemDto itemDto = itemShortDtoToItemDto(itemShortDto);
         itemDto.setOwner(userDtotoUser(userService.getUserById(userId)));
         log.info("Item with id = {} has been created", itemDto.getId());
         return itemToItemDto(itemRepository.save(itemDtoToItem(itemDto)));
@@ -50,16 +57,32 @@ public class ItemServiceImpl implements ItemService {
     @Transactional(readOnly = true)
     @Override
     public List<ItemDto> getAllItems(Long userId) {
-        List<Item> itemList = (List<Item>) itemRepository.findAllByOwnerId(userId);
-        List<ItemDto> items = itemList.stream().map(ItemMapper::itemToItemDto).collect(Collectors.toList());
+        Collection<Item> items = itemRepository.findAllByOwnerId(userId);
+        List<ItemDto> itemDtoList = items.stream().map(ItemMapper::itemToItemDto).collect(Collectors.toList());
+        List<Long> idItems = itemDtoList.stream().map(ItemDto::getId).collect(Collectors.toList());
 
-        items.forEach(item -> {
-            item.setComments(getComments(item.getId()));
-            setBookings(item, userId);
-        });
+        Map<Long, BookingItemDto> lastBookings = bookingRepository.findFirstByItemIdInAndStartLessThanEqualAndStatus(
+                        idItems, LocalDateTime.now(), Status.APPROVED, Sort.by(DESC, "start"))
+                .stream()
+                .map(BookingMapper::bookingToItemBookingDto)
+                .collect(Collectors.toMap(BookingItemDto::getItemId, Function.identity()));
+        itemDtoList.forEach(i -> i.setLastBooking(lastBookings.get(i.getId())));
 
-        log.info("Get all items");
-        return items;
+        Map<Long, BookingItemDto> nextBookings = bookingRepository.findFirstByItemIdInAndStartAfterAndStatus(
+                        idItems, LocalDateTime.now(), Status.APPROVED, Sort.by(Sort.Direction.ASC, "start"))
+                .stream()
+                .map(BookingMapper::bookingToItemBookingDto)
+                .collect(Collectors.toMap(BookingItemDto::getItemId, Function.identity()));
+        itemDtoList.forEach(i -> i.setNextBooking(nextBookings.get(i.getId())));
+
+        Map<Long, List<CommentDto>> comments = commentRepository.findByItemIdIn(idItems, Sort.by(DESC, "created"))
+                .stream()
+                .map(CommentMapper::commentToCommentDto)
+                .collect(Collectors.groupingBy(CommentDto::getId));
+        itemDtoList.forEach(i -> i.setComments(comments.get(i.getId())));
+        itemDtoList.sort(comparing(ItemDto::getId));
+
+        return itemDtoList;
     }
 
     @Transactional(readOnly = true)
