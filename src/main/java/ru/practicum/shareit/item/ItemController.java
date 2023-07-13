@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.item.comment.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.item.dto.ItemShortDto;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -17,9 +18,9 @@ public class ItemController {
     private final ItemService service;
 
     @PostMapping
-    public ItemDto createItem(@Valid @RequestBody ItemDto itemDto,
+    public ItemDto createItem(@Valid @RequestBody ItemShortDto itemShortDto,
                               @RequestHeader(REQUEST_HEADER_USER_ID) Long userId) {
-        return service.createItem(itemDto, userId);
+        return service.createItem(itemShortDto, userId);
     }
 
     @GetMapping("/{itemId}")
@@ -34,10 +35,10 @@ public class ItemController {
     }
 
     @PatchMapping("/{itemId}")
-    public ItemDto updateItemById(@RequestBody ItemDto itemDto,
+    public ItemDto updateItemById(@RequestBody ItemShortDto itemShortDto,
                                   @PathVariable Long itemId,
                                   @RequestHeader(REQUEST_HEADER_USER_ID) Long userId) {
-        return service.updateItemById(itemDto, itemId, userId);
+        return service.updateItemById(itemShortDto, itemId, userId);
     }
 
     @GetMapping("/search")

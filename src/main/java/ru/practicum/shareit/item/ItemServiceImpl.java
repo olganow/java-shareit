@@ -15,6 +15,8 @@ import ru.practicum.shareit.item.comment.CommentDto;
 import ru.practicum.shareit.item.comment.CommentMapper;
 import ru.practicum.shareit.item.comment.CommentRepository;
 import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.item.dto.ItemMapper;
+import ru.practicum.shareit.item.dto.ItemShortDto;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.UserService;
 
@@ -23,9 +25,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static ru.practicum.shareit.item.ItemMapper.itemDtoToItem;
-import static ru.practicum.shareit.item.ItemMapper.itemToItemDto;
 import static ru.practicum.shareit.item.comment.CommentMapper.commentToCommentDto;
+import static ru.practicum.shareit.item.dto.ItemMapper.*;
 import static ru.practicum.shareit.user.UserMapper.userDtotoUser;
 
 @Slf4j
@@ -39,7 +40,8 @@ public class ItemServiceImpl implements ItemService {
     private final UserService userService;
 
 
-    public ItemDto createItem(ItemDto itemDto, Long userId) {
+    public ItemDto createItem(ItemShortDto itemShortDto, Long userId) {
+        ItemDto itemDto = ItemShortDtoToItemDto(itemShortDto);
         itemDto.setOwner(userDtotoUser(userService.getUserById(userId)));
         log.info("Item with id = {} has been created", itemDto.getId());
         return itemToItemDto(itemRepository.save(itemDtoToItem(itemDto)));
@@ -72,20 +74,20 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public ItemDto updateItemById(ItemDto itemDto, Long itemId, Long userId) {
+    public ItemDto updateItemById(ItemShortDto itemShortDto, Long itemId, Long userId) {
         Optional<Item> updatedItem = itemRepository.findById(itemId);
         if (!updatedItem.get().getOwner().getId().equals(userId)) {
             log.info("Item with id = {} doesn't found", itemId);
             throw new NotFoundException("Item with id " + itemId + " doesn't found");
         }
-        if (itemDto.getName() != null && !itemDto.getName().isBlank()) {
-            updatedItem.get().setName(itemDto.getName());
+        if (itemShortDto.getName() != null && !itemShortDto.getName().isBlank()) {
+            updatedItem.get().setName(itemShortDto.getName());
         }
-        if (itemDto.getDescription() != null && !itemDto.getDescription().isBlank()) {
-            updatedItem.get().setDescription(itemDto.getDescription());
+        if (itemShortDto.getDescription() != null && !itemShortDto.getDescription().isBlank()) {
+            updatedItem.get().setDescription(itemShortDto.getDescription());
         }
-        if (itemDto.getAvailable() != null) {
-            updatedItem.get().setAvailable(itemDto.getAvailable());
+        if (itemShortDto.getAvailable() != null) {
+            updatedItem.get().setAvailable(itemShortDto.getAvailable());
         }
         log.info("Item with id = {} has been updated", itemId);
         return itemToItemDto(itemRepository.save(updatedItem.get()));
