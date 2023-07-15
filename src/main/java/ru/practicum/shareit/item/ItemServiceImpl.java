@@ -157,7 +157,7 @@ public class ItemServiceImpl implements ItemService {
     }
 
     private ItemDto setBookings(ItemDto itemDto, Long userId) {
-        if (itemDto.getOwner().getId() == userId) {
+        if (itemDto.getOwner().getId().equals(userId)) {
             itemDto.setLastBooking(
                     bookingRepository.findFirstByItemIdAndStartBeforeAndStatusOrderByStartDesc(itemDto.getId(),
                                     LocalDateTime.now(), Status.APPROVED).map(BookingMapper::bookingToItemBookingDto)
