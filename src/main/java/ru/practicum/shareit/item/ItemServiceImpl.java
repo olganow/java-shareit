@@ -34,6 +34,7 @@ import static java.util.Comparator.comparing;
 import static org.springframework.data.domain.Sort.Direction.DESC;
 import static ru.practicum.shareit.item.comment.CommentMapper.commentToCommentDto;
 import static ru.practicum.shareit.item.dto.ItemMapper.*;
+import static ru.practicum.shareit.user.UserMapper.ownerToUser;
 import static ru.practicum.shareit.user.UserMapper.userDtotoUser;
 
 @Slf4j
@@ -49,7 +50,7 @@ public class ItemServiceImpl implements ItemService {
 
     public ItemDto createItem(ItemShortDto itemShortDto, Long userId) {
         ItemDto itemDto = itemShortDtoToItemDto(itemShortDto);
-        itemDto.setOwner(userDtotoUser(userService.getUserById(userId)));
+        itemDto.setOwner(ownerToUser(userService.getUserById(userId)));
         log.info("Item with id = {} has been created", itemDto.getId());
         return itemToItemDto(itemRepository.save(itemDtoToItem(itemDto)));
     }
@@ -116,7 +117,6 @@ public class ItemServiceImpl implements ItemService {
         return itemToItemDto(itemRepository.save(updatedItem.get()));
     }
 
-
     @Transactional(readOnly = true)
     @Override
     public List<ItemDto> searchItemByText(String stringText) {
@@ -161,7 +161,7 @@ public class ItemServiceImpl implements ItemService {
     }
 
     private ItemDto setBookings(ItemDto itemDto, Long userId) {
-        if (itemDto.getOwner().getId().equals(userId)) {
+        if (itemDto.getOwner().getId() == userId) {
             itemDto.setLastBooking(
                     bookingRepository.findFirstByItemIdAndStartBeforeAndStatusOrderByStartDesc(itemDto.getId(),
                                     LocalDateTime.now(), Status.APPROVED).map(BookingMapper::bookingToItemBookingDto)
