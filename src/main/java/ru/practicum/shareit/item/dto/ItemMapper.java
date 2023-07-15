@@ -5,6 +5,7 @@ import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.User;
 
 import java.util.ArrayList;
+import java.util.List;
 
 @UtilityClass
 public class ItemMapper {
@@ -17,6 +18,17 @@ public class ItemMapper {
                 .available(item.getAvailable())
                 .owner(new ItemDto.Owner(item.getOwner().getId(), item.getOwner().getName(), item.getOwner().getEmail()))
                 .comments(new ArrayList<>())
+                .build();
+    }
+
+    public static ItemDto itemToItemDtoWithComments(Item item, List comments) {
+        return ItemDto.builder()
+                .id(item.getId())
+                .name(item.getName())
+                .description(item.getDescription())
+                .available(item.getAvailable())
+                .owner(new ItemDto.Owner(item.getOwner().getId(), item.getOwner().getName(), item.getOwner().getEmail()))
+                .comments(comments)
                 .build();
     }
 

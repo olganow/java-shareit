@@ -23,10 +23,7 @@ import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.UserService;
 
 import java.time.LocalDateTime;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -126,11 +123,10 @@ public class ItemServiceImpl implements ItemService {
         }
         return itemRepository.findByNameOrDescriptionAndAvailable(text)
                 .stream()
-                .peek(item -> setBookings(itemToItemDto(item), item.getOwner().getId()))
-                .map(ItemMapper::itemToItemDto)
+                .map(item -> itemToItemDtoWithComments(item, commentRepository.findByItemId(item.getId())))
+                .peek(itemDto -> log.info("Item with text = '{}' has been found", text))
                 .collect(Collectors.toList());
     }
-
 
     private List<CommentDto> getComments(Long itemId) {
         List<Comment> comments = commentRepository.findByItemId(itemId);
