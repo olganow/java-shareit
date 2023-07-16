@@ -56,31 +56,8 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public List<ItemDto> getAllItems(Long userId) {
         Collection<Item> items = itemRepository.findAllByOwnerId(userId);
-        List<ItemDto> itemDtoList = items.stream().map(ItemMapper::itemToItemDto).collect(Collectors.toList());
-        List<Long> idItems = itemDtoList.stream().map(ItemDto::getId).collect(Collectors.toList());
-
-        Map<Long, BookingItemDto> lastBookings = bookingRepository.findFirstByItemIdInAndStartLessThanEqualAndStatus(
-                        idItems, LocalDateTime.now(), Status.APPROVED, Sort.by(DESC, "start"))
-                .stream()
-                .map(BookingMapper::bookingToItemBookingDto)
-                .collect(Collectors.toMap(BookingItemDto::getItemId, Function.identity()));
-        itemDtoList.forEach(i -> i.setLastBooking(lastBookings.get(i.getId())));
-
-        Map<Long, BookingItemDto> nextBookings = bookingRepository.findFirstByItemIdInAndStartAfterAndStatus(
-                        idItems, LocalDateTime.now(), Status.APPROVED, Sort.by(Sort.Direction.ASC, "start"))
-                .stream()
-                .map(BookingMapper::bookingToItemBookingDto)
-                .collect(Collectors.toMap(BookingItemDto::getItemId, Function.identity()));
-        itemDtoList.forEach(i -> i.setNextBooking(nextBookings.get(i.getId())));
-
-        Map<Long, List<CommentDto>> comments = commentRepository.findByItemIdIn(idItems, Sort.by(DESC, "created"))
-                .stream()
-                .map(CommentMapper::commentToCommentDto)
-                .collect(Collectors.groupingBy(CommentDto::getId));
-        itemDtoList.forEach(i -> i.setComments(comments.get(i.getId())));
-        itemDtoList.sort(comparing(ItemDto::getId));
         log.info("Get all items");
-        return itemDtoList;
+        return getItemList(items);
     }
 
     @Transactional(readOnly = true)
@@ -121,19 +98,9 @@ public class ItemServiceImpl implements ItemService {
         if (text.isBlank()) {
             return List.of();
         }
-        return itemRepository.findByNameOrDescriptionAndAvailable(text)
-                .stream()
-                .map(item -> itemToItemDtoWithComments(item, commentRepository.findByItemId(item.getId())))
-                .peek(itemDto -> log.info("Item with text = '{}' has been found", text))
-                .collect(Collectors.toList());
-    }
-
-    private List<CommentDto> getComments(Long itemId) {
-        List<Comment> comments = commentRepository.findByItemId(itemId);
-        log.info("Get all comments");
-        return comments.stream()
-                .map(CommentMapper::commentToCommentDto)
-                .collect(Collectors.toList());
+        Collection<Item> items = itemRepository.findByNameOrDescriptionAndAvailable(text);
+        log.info("Get all items with text {}", text);
+        return getItemList(items);
     }
 
     @Override
@@ -154,6 +121,40 @@ public class ItemServiceImpl implements ItemService {
         comment.setCreated(LocalDateTime.now());
         log.info("Comment has been added");
         return commentToCommentDto(commentRepository.save(comment));
+    }
+
+    private List<ItemDto> getItemList(Collection<Item> items) {
+        List<ItemDto> itemDtoList = items.stream().map(ItemMapper::itemToItemDto).collect(Collectors.toList());
+        List<Long> idItems = itemDtoList.stream().map(ItemDto::getId).collect(Collectors.toList());
+        Map<Long, BookingItemDto> lastBookings = bookingRepository.findFirstByItemIdInAndStartLessThanEqualAndStatus(
+                        idItems, LocalDateTime.now(), Status.APPROVED, Sort.by(DESC, "start"))
+                .stream()
+                .map(BookingMapper::bookingToItemBookingDto)
+                .collect(Collectors.toMap(BookingItemDto::getItemId, Function.identity()));
+        itemDtoList.forEach(i -> i.setLastBooking(lastBookings.get(i.getId())));
+        Map<Long, BookingItemDto> nextBookings = bookingRepository.findFirstByItemIdInAndStartAfterAndStatus(
+                        idItems, LocalDateTime.now(), Status.APPROVED, Sort.by(Sort.Direction.ASC, "start"))
+                .stream()
+                .map(BookingMapper::bookingToItemBookingDto)
+                .collect(Collectors.toMap(BookingItemDto::getItemId, Function.identity()));
+        itemDtoList.forEach(i -> i.setNextBooking(nextBookings.get(i.getId())));
+
+        Map<Long, List<CommentDto>> comments = commentRepository.findByItemIdIn(idItems, Sort.by(DESC, "created"))
+                .stream()
+                .map(CommentMapper::commentToCommentDto)
+                .collect(Collectors.groupingBy(CommentDto::getId));
+
+        itemDtoList.forEach(i -> i.setComments(comments.get(i.getId())));
+        itemDtoList.sort(comparing(ItemDto::getId));
+        return itemDtoList;
+    }
+
+    private List<CommentDto> getComments(Long itemId) {
+        List<Comment> comments = commentRepository.findByItemId(itemId);
+        log.info("Get all comments");
+        return comments.stream()
+                .map(CommentMapper::commentToCommentDto)
+                .collect(Collectors.toList());
     }
 
     private ItemDto setBookings(ItemDto itemDto, Long userId) {
