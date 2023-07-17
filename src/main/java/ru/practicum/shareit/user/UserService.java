@@ -13,6 +13,6 @@ public interface UserService {
 
     UserDto updateUserById(Long userId, UserDto userDto);
 
-    UserDto removeUserById(Long userId);
+    Boolean removeUserById(Long userId);
 
 }
