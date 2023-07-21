@@ -56,7 +56,7 @@ public class ItemServiceImpl implements ItemService {
                     .orElseThrow(() -> new NotFoundException("Request with Id:" + requestId + "doesn't found")));
         }
         log.info("Item with id = {} has been created", itemDto.getId());
-        return itemToItemDto(itemRepository.save(itemDtoToItem(itemDto)));
+        return itemToItemDto(itemRepository.save(item));
     }
 
     @Transactional(readOnly = true)

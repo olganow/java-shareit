@@ -18,6 +18,7 @@ public class ItemMapper {
                 .available(item.getAvailable())
                 .owner(new ItemDto.Owner(item.getOwner().getId(), item.getOwner().getName(), item.getOwner().getEmail()))
                 .comments(new ArrayList<>())
+                .requestId(item.getRequest() == null ? null :  item.getRequest().getId())
                 .build();
     }
 

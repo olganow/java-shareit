@@ -22,7 +22,7 @@ CREATE TABLE IF NOT EXISTS items
     description  VARCHAR(512)                            NOT NULL,
     is_available BOOLEAN                                 NOT NULL,
     owner_id     BIGINT                                  NOT NULL,
-    request_id   BIGINT                                  NOT NULL,
+    request_id   BIGINT,
     CONSTRAINT PK_ITEM PRIMARY KEY (id),
     CONSTRAINT FK_ITEM_OWNER FOREIGN KEY (owner_id) references users
         on delete cascade on update cascade,

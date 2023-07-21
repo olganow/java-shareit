@@ -26,5 +26,6 @@ public class ItemRequest {
     @JoinColumn(name = "user_id")
     private User requester;
 
+    @Column(name = "created", nullable = false)
     private Timestamp created = Timestamp.valueOf(LocalDateTime.now());
 }
