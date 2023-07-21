@@ -1,11 +1,15 @@
 package ru.practicum.shareit.request;
 
+import lombok.extern.slf4j.Slf4j;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.shareit.request.dto.ItemRequestShortDto;
+import ru.practicum.shareit.request.dto.ItemRequestWithItemList;
 
 import javax.validation.Valid;
-import javax.xml.bind.ValidationException;
+import javax.validation.constraints.Positive;
+import javax.validation.constraints.PositiveOrZero;
 import java.util.List;
 
 import static ru.practicum.shareit.util.Constants.REQUEST_HEADER_USER_ID;
@@ -13,33 +17,38 @@ import static ru.practicum.shareit.util.Constants.REQUEST_HEADER_USER_ID;
 @RestController
 @RequestMapping(path = "/requests")
 @RequiredArgsConstructor
+@Slf4j
 public class ItemRequestController {
     private final ItemRequestService requestService;
 
     @PostMapping()
     public ItemRequestDto createRequest(@RequestHeader(REQUEST_HEADER_USER_ID) Long id,
-                                        @RequestBody @Valid ItemRequestDto itemRequestDto) {
-        return requestService.createRequest(id, itemRequestDto);
+                                        @RequestBody @Valid ItemRequestShortDto itemRequestShortDto) {
+        log.debug("Create request");
+        return requestService.createRequest(id, itemRequestShortDto);
     }
 
     @GetMapping("/{requestId}")
-    public ItemRequestWithItems getRequestById(@RequestHeader(REQUEST_HEADER_USER_ID) Long id,
-                                               @PathVariable Long requestId) {
+    public ItemRequestWithItemList getRequestById(@RequestHeader(REQUEST_HEADER_USER_ID) Long id,
+                                                  @PathVariable Long requestId) {
+        log.debug("Get requests by id = {}", id);
         return requestService.getRequestById(id, requestId);
     }
 
-    @GetMapping()
-    public List<ItemRequestWithItems> getOwnRequests(@RequestHeader(REQUEST_HEADER_USER_ID) Long id,
-                                                     @RequestParam(defaultValue = "0") int from,
-                                                     @RequestParam(defaultValue = "10") int size) throws ValidationException {
-        return requestService.getOwnRequests(id, from, size);
+    @GetMapping("/all")
+    public List<ItemRequestWithItemList> getAllRequests(@RequestHeader(REQUEST_HEADER_USER_ID) Long id,
+                                                        @PositiveOrZero @RequestParam(defaultValue = "0") Integer from,
+                                                        @Positive @RequestParam(defaultValue = "10") Integer size) {
+        log.debug("Get all requests");
+        return requestService.getAllRequests(id, from, size);
     }
 
-    @GetMapping("/all")
-    public List<ItemRequestWithItems> getAllRequests(@RequestHeader(REQUEST_HEADER_USER_ID) Long id,
-                                                     @RequestParam(defaultValue = "0") int from,
-                                                     @RequestParam(defaultValue = "10") int size) throws ValidationException {
-        return requestService.getAll(id, from, size);
+    @GetMapping()
+    public List<ItemRequestWithItemList> getAllRequestsByRequester(@RequestHeader(REQUEST_HEADER_USER_ID) Long id,
+                                                                   @PositiveOrZero @RequestParam(defaultValue = "0") Integer from,
+                                                                   @Positive @RequestParam(defaultValue = "10") Integer size) {
+        log.debug("Get all requests by requester ");
+        return requestService.getAllRequestsByRequester(id, from, size);
     }
 
 }
