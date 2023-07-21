@@ -91,7 +91,7 @@ public class ItemRequestServiceImpl implements ItemRequestService {
     private ItemRequestWithItemList setItemsByItemRequest(ItemRequest itemRequest) {
         ItemRequestWithItemList request = itemRequestToRequestWithItems(itemRequest);
         List<ItemInRequest> items = itemRepository.findAllByRequestId(itemRequest.getId()).stream()
-                .map(ItemMapper::toItemForRequest).collect(Collectors.toList());
+                .map(ItemMapper::itemToItemInRequest).collect(Collectors.toList());
 
         request.setItems(items.isEmpty() ? new ArrayList<>() : items);
 

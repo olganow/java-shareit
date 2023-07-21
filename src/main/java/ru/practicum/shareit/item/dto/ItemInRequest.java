@@ -1,23 +1,18 @@
 package ru.practicum.shareit.item.dto;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-
 @Data
+@Builder
 @AllArgsConstructor
-public class ItemShortDto {
+public class ItemInRequest {
     private Long id;
-
-    @NotBlank(message = "Name can't be blank")
+    private Long ownerId;
     private String name;
-
-    @NotBlank(message = "Description can't be blank")
     private String description;
-
-    @NotNull
     private Boolean available;
     private Long requestId;
+
 }

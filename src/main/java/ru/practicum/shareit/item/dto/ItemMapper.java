@@ -60,4 +60,15 @@ public class ItemMapper {
                 .available(itemShortDto.getAvailable())
                 .build();
     }
+
+    public static ItemInRequest itemToItemInRequest(Item item) {
+        return ItemInRequest.builder()
+                .id(item.getId())
+                .name(item.getName())
+                .description(item.getDescription())
+                .ownerId(item.getOwner().getId())
+                .available(item.getAvailable())
+                .requestId(item.getRequest() != null ? item.getRequest().getId() : null)
+                .build();
+    }
 }

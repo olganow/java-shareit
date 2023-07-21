@@ -20,6 +20,7 @@ import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemMapper;
 import ru.practicum.shareit.item.dto.ItemShortDto;
 import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.request.ItemRequestRepository;
 import ru.practicum.shareit.user.UserService;
 
 import java.time.LocalDateTime;
@@ -43,11 +44,17 @@ public class ItemServiceImpl implements ItemService {
     private final BookingRepository bookingRepository;
     private final CommentRepository commentRepository;
     private final UserService userService;
-
+    private final ItemRequestRepository requestsRepository;
 
     public ItemDto createItem(ItemShortDto itemShortDto, Long userId) {
         ItemDto itemDto = itemShortDtoToItemDto(itemShortDto);
         itemDto.setOwner(ownerToUser(userService.getUserById(userId)));
+        Item item = itemDtoToItem(itemDto);
+        Long requestId = itemShortDto.getRequestId();
+        if (requestId != null) {
+            item.setRequest(requestsRepository.findById(requestId)
+                    .orElseThrow(() -> new NotFoundException("Request with Id:" + requestId + "doesn't found")));
+        }
         log.info("Item with id = {} has been created", itemDto.getId());
         return itemToItemDto(itemRepository.save(itemDtoToItem(itemDto)));
     }
