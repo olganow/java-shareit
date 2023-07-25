@@ -87,7 +87,7 @@ class ItemMapperTest {
     }
 
     @Test
-    void toDtoShortList() {;
+    void toDtoShortList() {
         ItemInRequest itemInRequest = ItemMapper.itemToItemInRequest(item);
 
         assertThat(itemInRequest.getId()).isEqualTo(1L);
