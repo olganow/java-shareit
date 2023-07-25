@@ -20,7 +20,7 @@ class BookingDtoTest {
     private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern(TIME_PATTERN_TEST);
 
     @Test
-    void testBookingCreationDto() throws IOException {
+    void bookingCreationDtoTest() throws IOException {
         LocalDateTime now = LocalDateTime.now();
         BookingDto bookingCreationDto = BookingDto.builder()
                 .id(1L)

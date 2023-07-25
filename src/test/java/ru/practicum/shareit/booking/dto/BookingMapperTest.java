@@ -10,7 +10,8 @@ import ru.practicum.shareit.user.User;
 import java.time.LocalDateTime;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static ru.practicum.shareit.booking.dto.BookingMapper.*;
+import static ru.practicum.shareit.booking.dto.BookingMapper.bookingToBookingShortDto;
+import static ru.practicum.shareit.booking.dto.BookingMapper.bookingToItemBookingDto;
 
 
 class BookingMapperTest {
@@ -41,7 +42,7 @@ class BookingMapperTest {
     }
 
     @Test
-    void toBookingFromItem() {
+    void bookingToItemBookingDtoTest() {
         BookingItemDto bookingItemDto = bookingToItemBookingDto(booking);
 
         assertThat(bookingItemDto.getId()).isEqualTo(1L);
@@ -52,7 +53,7 @@ class BookingMapperTest {
     }
 
     @Test
-    void toDtoFromBooking() {
+    void bookingToBookingDtoTest() {
         BookingDto bookingDto = BookingMapper.bookingToBookingDto(booking);
         BookingDto.Item itemActual = new BookingDto.Item(booking.getItem().getId(), booking.getItem().getName());
         BookingDto.Booker bookerActual = new BookingDto.Booker(booking.getBooker().getId(), booking.getBooker().getName());

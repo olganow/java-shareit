@@ -96,7 +96,7 @@ public class ItemServiceImplIntegrationTest {
     }
 
     @Test
-    void getAllItemsByOwnerId_returnListItemDto_length2() {
+    void getAllItemsByOwnerIdTest() {
         when(userRepository.existsById(anyLong())).thenReturn(true);
         when(itemRepository.findAllByOwnerId(anyLong())).thenReturn(List.of(itemDtoToItem(itemDtoOne),
                 itemDtoToItem(itemDtoAnother)));
@@ -135,7 +135,7 @@ public class ItemServiceImplIntegrationTest {
     }
 
     @Test
-    void createNewItem_incorrectOwner_throwsException() {
+    void createNewItemWithIncorrectUserValidationTest() {
         when(userRepository.findById(anyLong())).thenReturn(Optional.empty());
 
         assertThrows(NotFoundException.class, () -> service.createItem(itemShortDto, user.getId()));

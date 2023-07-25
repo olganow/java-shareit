@@ -66,7 +66,6 @@ public class BookingServiceImpl implements BookingService {
     @Transactional(readOnly = true)
     @Override
     public BookingDto getBookingById(Long id, Long bookingId) {
-        validateUser(id);
         Booking booking = validateBooking(bookingId);
         if (!booking.getBooker().getId().equals(id) && !booking.getItem().getOwner().getId().equals(id)) {
             throw new NotFoundException("User with id= " + id + " is not booker or owner");
