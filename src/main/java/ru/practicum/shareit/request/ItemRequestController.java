@@ -5,7 +5,7 @@ import ru.practicum.shareit.request.dto.ItemRequestDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.request.dto.ItemRequestShortDto;
-import ru.practicum.shareit.request.dto.ItemRequestWithItemList;
+
 
 import javax.validation.Valid;
 import javax.validation.constraints.Positive;
@@ -29,24 +29,24 @@ public class ItemRequestController {
     }
 
     @GetMapping("/{requestId}")
-    public ItemRequestWithItemList getRequestById(@RequestHeader(REQUEST_HEADER_USER_ID) Long id,
-                                                  @PathVariable Long requestId) {
+    public ItemRequestDto getRequestById(@RequestHeader(REQUEST_HEADER_USER_ID) Long id,
+                                         @PathVariable Long requestId) {
         log.debug("Get requests by id = {}", id);
         return requestService.getRequestById(id, requestId);
     }
 
     @GetMapping("/all")
-    public List<ItemRequestWithItemList> getAllRequests(@RequestHeader(REQUEST_HEADER_USER_ID) Long id,
-                                                        @PositiveOrZero @RequestParam(defaultValue = "0") Integer from,
-                                                        @Positive @RequestParam(defaultValue = "10") Integer size) {
+    public List<ItemRequestDto> getAllRequests(@RequestHeader(REQUEST_HEADER_USER_ID) Long id,
+                                               @PositiveOrZero @RequestParam(defaultValue = "0") Integer from,
+                                               @Positive @RequestParam(defaultValue = "10") Integer size) {
         log.debug("Get all requests");
         return requestService.getAllRequests(id, from, size);
     }
 
     @GetMapping()
-    public List<ItemRequestWithItemList> getAllRequestsByRequester(@RequestHeader(REQUEST_HEADER_USER_ID) Long id,
-                                                                   @PositiveOrZero @RequestParam(defaultValue = "0") Integer from,
-                                                                   @Positive @RequestParam(defaultValue = "10") Integer size) {
+    public List<ItemRequestDto> getAllRequestsByRequester(@RequestHeader(REQUEST_HEADER_USER_ID) Long id,
+                                                          @PositiveOrZero @RequestParam(defaultValue = "0") Integer from,
+                                                          @Positive @RequestParam(defaultValue = "10") Integer size) {
         log.debug("Get all requests by requester ");
         return requestService.getAllRequestsByRequester(id, from, size);
     }

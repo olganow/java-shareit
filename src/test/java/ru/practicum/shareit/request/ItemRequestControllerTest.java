@@ -12,7 +12,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
 import ru.practicum.shareit.request.dto.ItemRequestShortDto;
-import ru.practicum.shareit.request.dto.ItemRequestWithItemList;
 import ru.practicum.shareit.user.User;
 
 import javax.validation.ValidationException;
@@ -40,11 +39,11 @@ class ItemRequestControllerTest {
     @MockBean
     private ItemRequestService itemRequestService;
     private ItemRequestDto itemRequestDto;
+    private ItemRequestDto itemRequestDtoAnother;
     private ItemRequestShortDto itemRequestShortDto;
 
     private User user;
     private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS");
-    private ItemRequestWithItemList itemRequestWithItemList;
 
     @BeforeEach
     void beforeEach() {
@@ -60,7 +59,7 @@ class ItemRequestControllerTest {
                 .created(Timestamp.valueOf(now))
                 .build();
 
-        itemRequestWithItemList = ItemRequestWithItemList.builder()
+        itemRequestDtoAnother = ItemRequestDto.builder()
                 .id(2L)
                 .description("Description")
                 .created(Timestamp.valueOf(now))
@@ -135,7 +134,7 @@ class ItemRequestControllerTest {
 
     @Test
     void getRequestByIdTest() throws Exception {
-        when(itemRequestService.getRequestById(anyLong(), anyLong())).thenReturn(itemRequestWithItemList);
+        when(itemRequestService.getRequestById(anyLong(), anyLong())).thenReturn(itemRequestDtoAnother);
 
         String result = mockMvc.perform(get("/requests/{requestId}", 1L)
                         .header("X-Sharer-User-Id", 1))
@@ -144,7 +143,7 @@ class ItemRequestControllerTest {
                 .andReturn()
                 .getResponse()
                 .getContentAsString();
-        assertEquals(objectMapper.writeValueAsString(itemRequestWithItemList), result);
+        assertEquals(objectMapper.writeValueAsString(itemRequestDtoAnother), result);
     }
 
     @Test
@@ -171,8 +170,8 @@ class ItemRequestControllerTest {
 
     @Test
     void getAllRequestsByRequesterTest() throws Exception {
-        List<ItemRequestWithItemList> itemRequests = new ArrayList<>();
-        itemRequests.add(itemRequestWithItemList);
+        List<ItemRequestDto> itemRequests = new ArrayList<>();
+        itemRequests.add(itemRequestDtoAnother);
         when(itemRequestService.getAllRequestsByRequester(anyLong(), anyInt(), anyInt())).thenReturn(itemRequests);
 
         mockMvc.perform(get("/requests/all")

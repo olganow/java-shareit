@@ -32,7 +32,7 @@ import static java.util.Comparator.comparing;
 import static org.springframework.data.domain.Sort.Direction.DESC;
 import static ru.practicum.shareit.item.comment.CommentMapper.commentToCommentDto;
 import static ru.practicum.shareit.item.dto.ItemMapper.*;
-import static ru.practicum.shareit.user.UserMapper.ownerToUser;
+import static ru.practicum.shareit.user.UserMapper.userDtoToOwner;
 import static ru.practicum.shareit.user.UserMapper.userDtotoUser;
 
 @Slf4j
@@ -48,7 +48,7 @@ public class ItemServiceImpl implements ItemService {
 
     public ItemDto createItem(ItemShortDto itemShortDto, Long userId) {
         ItemDto itemDto = itemShortDtoToItemDto(itemShortDto);
-        itemDto.setOwner(ownerToUser(userService.getUserById(userId)));
+        itemDto.setOwner(userDtoToOwner(userService.getUserById(userId)));
         Item item = itemDtoToItem(itemDto);
         Long requestId = itemShortDto.getRequestId();
         if (requestId != null) {

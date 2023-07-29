@@ -15,7 +15,6 @@ import ru.practicum.shareit.item.ItemRepository;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
 import ru.practicum.shareit.request.dto.ItemRequestMapper;
 import ru.practicum.shareit.request.dto.ItemRequestShortDto;
-import ru.practicum.shareit.request.dto.ItemRequestWithItemList;
 import ru.practicum.shareit.user.UserRepository;
 
 import java.sql.Timestamp;
@@ -51,7 +50,7 @@ public class ItemRequestServiceImpl implements ItemRequestService {
     }
 
     @Override
-    public ItemRequestWithItemList getRequestById(Long id, Long requestId) {
+    public ItemRequestDto getRequestById(Long id, Long requestId) {
         validateUser(id);
 
         Optional<ItemRequest> itemRequestOptional = itemRequestsRepository.findById(requestId);
@@ -67,10 +66,10 @@ public class ItemRequestServiceImpl implements ItemRequestService {
     }
 
     @Override
-    public List<ItemRequestWithItemList> getAllRequestsByRequester(Long id, int from, int size) {
+    public List<ItemRequestDto> getAllRequestsByRequester(Long id, int from, int size) {
         validateUser(id);
         Pageable pageable = PageRequest.of(from, size).withSort(Sort.by("created").descending());
-        Page<ItemRequestWithItemList> requests = itemRequestsRepository
+        Page<ItemRequestDto> requests = itemRequestsRepository
                 .findByRequesterId(id, pageable).map(this::setItemsByItemRequest);
 
         log.info("Get requests by requester with id = {}", id);
@@ -78,7 +77,7 @@ public class ItemRequestServiceImpl implements ItemRequestService {
     }
 
     @Override
-    public List<ItemRequestWithItemList> getAllRequests(Long id, int from, int size) {
+    public List<ItemRequestDto> getAllRequests(Long id, int from, int size) {
         validateUser(id);
         Pageable pageable = PageRequest.of(from, size).withSort(Sort.by("created").descending());
 
@@ -88,8 +87,8 @@ public class ItemRequestServiceImpl implements ItemRequestService {
     }
 
 
-    private ItemRequestWithItemList setItemsByItemRequest(ItemRequest itemRequest) {
-        ItemRequestWithItemList request = itemRequestToRequestWithItems(itemRequest);
+    private ItemRequestDto setItemsByItemRequest(ItemRequest itemRequest) {
+        ItemRequestDto request = itemRequestToRequestWithItems(itemRequest);
         List<ItemInRequest> items = itemRepository.findAllByRequestId(itemRequest.getId()).stream()
                 .map(ItemMapper::itemToItemInRequest).collect(Collectors.toList());
 

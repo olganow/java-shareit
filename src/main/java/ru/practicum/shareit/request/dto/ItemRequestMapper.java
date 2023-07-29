@@ -22,11 +22,22 @@ public class ItemRequestMapper {
                 .build();
     }
 
-    public static ItemRequestWithItemList itemRequestToRequestWithItems(ItemRequest itemRequest) {
-        return ItemRequestWithItemList.builder()
+    public static ItemRequestDto itemRequestToRequestWithItems(ItemRequest itemRequest) {
+        return ItemRequestDto.builder()
                 .id(itemRequest.getId())
                 .description(itemRequest.getDescription())
                 .created(itemRequest.getCreated())
                 .build();
     }
+
+    public static ItemRequestShortDto itemRequestToItemRequestShortDto(ItemRequest itemRequest) {
+        return ItemRequestShortDto.builder()
+                .id(itemRequest.getId())
+                .description(itemRequest.getDescription())
+                .requesterId(itemRequest.getRequester().getId() != null ? itemRequest.getRequester().getId() : null)
+                .created(itemRequest.getCreated())
+                .build();
+    }
+
 }
+
