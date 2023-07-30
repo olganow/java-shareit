@@ -119,8 +119,7 @@ class ItemServiceImplTest {
         when(userRepository.existsById(anyLong())).thenReturn(true);
         when(itemRequestRepository.findById(anyLong())).thenReturn(Optional.of(itemRequest));
         when(itemRepository.findAllByRequestId(anyLong())).thenReturn(List.of());
-        ItemRequestDto expected = new ItemRequestDto
-                (1L, "Item_description", user, null, List.of());
+        ItemRequestDto expected = new ItemRequestDto(1L, "Item_description", user, null, List.of());
         ItemRequestDto actual = itemRequestService.getRequestById(userId, requestId);
 
         assertEquals(expected.getId(), actual.getId());

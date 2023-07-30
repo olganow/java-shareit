@@ -39,7 +39,7 @@ class ItemMapperTest {
                 .owner(new ItemDto.Owner(user.getId(), user.getName(), user.getEmail()))
                 .build();
 
-        itemShortDto =ItemShortDto
+        itemShortDto = ItemShortDto
                 .builder()
                 .id(1L)
                 .name("Item_name")
@@ -77,7 +77,7 @@ class ItemMapperTest {
 
     @Test
     void itemShortDtoToItemDtoTest() {
-       itemDto = ItemMapper.itemShortDtoToItemDto(itemShortDto);
+        itemDto = ItemMapper.itemShortDtoToItemDto(itemShortDto);
 
         assertThat(itemDto.getId()).isEqualTo(1L);
         assertThat(this.itemDto.getName()).isEqualTo("Item_name");

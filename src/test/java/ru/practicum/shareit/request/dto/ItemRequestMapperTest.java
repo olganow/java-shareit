@@ -17,7 +17,7 @@ class ItemRequestMapperTest {
     private User user;
     private Comment comment;
     private final LocalDateTime start = LocalDateTime.now();
-    ItemRequest itemRequest;
+    private ItemRequest itemRequest;
 
     @BeforeEach
     void beforeEach() {
@@ -30,31 +30,31 @@ class ItemRequestMapperTest {
 
     @Test
     void itemRequestToRequestDtoTest() {
-        ItemRequestDto ItemRequest = ItemRequestMapper.itemRequestToRequestDto(itemRequest);
+        ItemRequestDto itemRequestDto = ItemRequestMapper.itemRequestToRequestDto(itemRequest);
 
-        assertThat(ItemRequest.getId()).isEqualTo(itemRequest.getId());
-        assertThat(ItemRequest.getDescription()).isEqualTo(itemRequest.getDescription());
-        assertThat(ItemRequest.getRequester()).isEqualTo(itemRequest.getRequester());
-        assertThat(ItemRequest.getCreated()).isEqualTo(itemRequest.getCreated());
+        assertThat(itemRequestDto.getId()).isEqualTo(itemRequest.getId());
+        assertThat(itemRequestDto.getDescription()).isEqualTo(itemRequest.getDescription());
+        assertThat(itemRequestDto.getRequester()).isEqualTo(itemRequest.getRequester());
+        assertThat(itemRequestDto.getCreated()).isEqualTo(itemRequest.getCreated());
     }
 
     @Test
     void itemRequestShortDtoToItemRequestTest() {
         ItemRequestShortDto itemRequestShortDto = new ItemRequestShortDto(itemRequest.getId(),
                 itemRequest.getDescription(), itemRequest.getRequester().getId(), itemRequest.getCreated());
-        ItemRequest ItemRequest = ItemRequestMapper.itemRequestShortDtoToItemRequest(itemRequestShortDto);
+        ItemRequest itemRequest = ItemRequestMapper.itemRequestShortDtoToItemRequest(itemRequestShortDto);
 
-        assertThat(ItemRequest.getDescription()).isEqualTo(itemRequestShortDto.getDescription());
-        assertThat(ItemRequest.getCreated()).isEqualTo(itemRequestShortDto.getCreated());
+        assertThat(itemRequest.getDescription()).isEqualTo(itemRequestShortDto.getDescription());
+        assertThat(itemRequest.getCreated()).isEqualTo(itemRequestShortDto.getCreated());
     }
 
     @Test
     void itemRequestToRequestWithItemsTest() {
-        ItemRequestDto ItemRequest = ItemRequestMapper.itemRequestToRequestWithItems(itemRequest);
+        ItemRequestDto itemRequestDto = ItemRequestMapper.itemRequestToRequestWithItems(itemRequest);
 
-        assertThat(ItemRequest.getId()).isEqualTo(itemRequest.getId());
-        assertThat(ItemRequest.getDescription()).isEqualTo(itemRequest.getDescription());
-        assertThat(ItemRequest.getCreated()).isEqualTo(itemRequest.getCreated());
+        assertThat(itemRequestDto.getId()).isEqualTo(itemRequest.getId());
+        assertThat(itemRequestDto.getDescription()).isEqualTo(itemRequest.getDescription());
+        assertThat(itemRequestDto.getCreated()).isEqualTo(itemRequest.getCreated());
     }
 
 }

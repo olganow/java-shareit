@@ -94,8 +94,8 @@ class ItemRequestControllerTest {
 
     @Test
     public void createItemRequestWithWrongUserValidationTest() throws Exception {
-        when(itemRequestService.createRequest(anyLong(), any())).
-                thenThrow(new NotFoundException("Объект не найден {}"));
+        when(itemRequestService.createRequest(anyLong(), any()))
+                .thenThrow(new NotFoundException("Объект не найден {}"));
         mockMvc.perform(post("/requests")
                         .header("X-Sharer-User-Id", 999)
                         .contentType("application/json")
@@ -122,8 +122,8 @@ class ItemRequestControllerTest {
     @Test
     public void createRequestWithWrongTimeValidationTest() throws Exception {
         itemRequestShortDto.setCreated(Timestamp.valueOf(LocalDateTime.now().plusDays(24)));
-        when(itemRequestService.createRequest(anyLong(), any())).
-                thenThrow(new ValidationException(""));
+        when(itemRequestService.createRequest(anyLong(), any()))
+                .thenThrow(new ValidationException(""));
         mockMvc.perform(post("/requests")
                         .content(objectMapper.writeValueAsString(itemRequestShortDto))
                         .header("X-Sharer-User-Id", 1)
