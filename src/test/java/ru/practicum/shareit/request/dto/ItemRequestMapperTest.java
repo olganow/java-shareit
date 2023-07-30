@@ -50,12 +50,11 @@ class ItemRequestMapperTest {
 
     @Test
     void itemRequestToRequestWithItemsTest() {
-        ItemRequestWithItemList ItemRequest = ItemRequestMapper.itemRequestToRequestWithItems(itemRequest);
+        ItemRequestDto ItemRequest = ItemRequestMapper.itemRequestToRequestWithItems(itemRequest);
 
         assertThat(ItemRequest.getId()).isEqualTo(itemRequest.getId());
         assertThat(ItemRequest.getDescription()).isEqualTo(itemRequest.getDescription());
         assertThat(ItemRequest.getCreated()).isEqualTo(itemRequest.getCreated());
     }
-
 
 }

@@ -5,7 +5,6 @@ import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.User;
 
 import java.util.ArrayList;
-import java.util.List;
 
 @UtilityClass
 public class ItemMapper {
@@ -19,17 +18,6 @@ public class ItemMapper {
                 .owner(new ItemDto.Owner(item.getOwner().getId(), item.getOwner().getName(), item.getOwner().getEmail()))
                 .comments(new ArrayList<>())
                 .requestId(item.getRequest() == null ? null :  item.getRequest().getId())
-                .build();
-    }
-
-    public static ItemDto itemToItemDtoWithComments(Item item, List comments) {
-        return ItemDto.builder()
-                .id(item.getId())
-                .name(item.getName())
-                .description(item.getDescription())
-                .available(item.getAvailable())
-                .owner(new ItemDto.Owner(item.getOwner().getId(), item.getOwner().getName(), item.getOwner().getEmail()))
-                .comments(comments)
                 .build();
     }
 
@@ -53,15 +41,6 @@ public class ItemMapper {
                 .build();
     }
 
-    public static Item itemShortDtoToItem(ItemShortDto itemShortDto) {
-        return Item.builder()
-                .id(itemShortDto.getId())
-                .name(itemShortDto.getName())
-                .description(itemShortDto.getDescription())
-                .available(itemShortDto.getAvailable())
-                .build();
-    }
-
     public static ItemInRequest itemToItemInRequest(Item item) {
         return ItemInRequest.builder()
                 .id(item.getId())
@@ -72,4 +51,5 @@ public class ItemMapper {
                 .requestId(item.getRequest() != null ? item.getRequest().getId() : null)
                 .build();
     }
+
 }

@@ -5,7 +5,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.BookingShortDto;
@@ -133,7 +132,7 @@ class BookingServiceImplTest {
     void getBookingByIdTest() {
         Long userId = user.getId();
         Long bookingId = booking.getId();
-        when(bookingRepository.findById(Mockito.anyLong())).thenReturn(Optional.of(booking));
+        when(bookingRepository.findById(anyLong())).thenReturn(Optional.of(booking));
         BookingDto result = bookingService.getBookingById(userId, bookingId);
 
         assertEquals(1L, result.getId());
@@ -149,7 +148,7 @@ class BookingServiceImplTest {
     @Test
     void getBookingByIdWithWrongBookingIdTest() {
         Long bookingId = 9999L;
-        Mockito.when(bookingRepository.findById(Mockito.anyLong())).thenReturn(Optional.empty());
+        when(bookingRepository.findById(anyLong())).thenReturn(Optional.empty());
 
         assertThrows(NotFoundException.class, () -> bookingService.getBookingById(user.getId(), bookingId));
     }
@@ -158,7 +157,7 @@ class BookingServiceImplTest {
     void getBookingByIdWithWrongUserIdTest() {
         Long bookingId = 1L;
         Long userId = 9999L;
-        when(bookingRepository.findById(Mockito.anyLong())).thenReturn(Optional.of(booking));
+        when(bookingRepository.findById(anyLong())).thenReturn(Optional.of(booking));
 
         assertThrows(NotFoundException.class, () -> bookingService.getBookingById(userId, bookingId));
     }

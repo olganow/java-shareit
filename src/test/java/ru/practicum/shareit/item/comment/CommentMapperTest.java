@@ -17,7 +17,7 @@ class CommentMapperTest {
 
     @BeforeEach
     void beforeEach() {
-        user = new User(1L, "User_name", "alex.b@yandex.ru");
+        user = new User(1L, "User_name", "user@test.testz");
         item = new Item(1L, "Item_name", "Item_Description", true, user,
                 null);
         comment = new Comment(1L, "Comment_Text", item, user, start);

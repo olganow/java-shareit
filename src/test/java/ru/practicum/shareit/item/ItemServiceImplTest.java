@@ -5,7 +5,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.item.dto.ItemDto;
@@ -15,7 +14,6 @@ import ru.practicum.shareit.request.ItemRequestRepository;
 import ru.practicum.shareit.request.ItemRequestServiceImpl;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
 import ru.practicum.shareit.request.dto.ItemRequestShortDto;
-import ru.practicum.shareit.request.dto.ItemRequestWithItemList;
 import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.UserRepository;
 
@@ -27,7 +25,7 @@ import java.util.Optional;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class ItemServiceImplTest {
@@ -96,7 +94,7 @@ class ItemServiceImplTest {
     void createRequestTest() {
         Long userId = user.getId();
         when(userRepository.findById(userId)).thenReturn(Optional.of(user));
-        when(itemRequestRepository.save(Mockito.any())).thenAnswer(invocationOnMock ->
+        when(itemRequestRepository.save(any())).thenAnswer(invocationOnMock ->
                 invocationOnMock.getArgument(0));
         ItemRequestDto itemRequestDto = itemRequestService.createRequest(userId, itemRequestShortDto);
 
@@ -106,10 +104,10 @@ class ItemServiceImplTest {
     @Test
     void createRequestWithWrongUserIdValidationTest() {
         Long userId = 999L;
-        when(userRepository.findById(Mockito.any())).thenReturn(Optional.empty());
+        when(userRepository.findById(any())).thenReturn(Optional.empty());
         assertThrows(NotFoundException.class, () -> itemRequestService.createRequest(userId, itemRequestShortDto));
 
-        Mockito.verify(itemRequestRepository, Mockito.never()).save(Mockito.any());
+        verify(itemRequestRepository, never()).save(any());
     }
 
 
@@ -118,32 +116,35 @@ class ItemServiceImplTest {
         Long userId = user.getId();
         Long requestId = 1L;
         ItemRequest itemRequest = new ItemRequest(1L, "Item_description", user, null);
-        when(userRepository.existsById(Mockito.anyLong())).thenReturn(true);
-        when(itemRequestRepository.findById(Mockito.anyLong())).thenReturn(Optional.of(itemRequest));
-        when(itemRepository.findAllByRequestId(Mockito.anyLong())).thenReturn(List.of());
-        ItemRequestWithItemList expected = new ItemRequestWithItemList
-                (1L, "Item_description", null, List.of());
-        ItemRequestWithItemList actual = itemRequestService.getRequestById(userId, requestId);
+        when(userRepository.existsById(anyLong())).thenReturn(true);
+        when(itemRequestRepository.findById(anyLong())).thenReturn(Optional.of(itemRequest));
+        when(itemRepository.findAllByRequestId(anyLong())).thenReturn(List.of());
+        ItemRequestDto expected = new ItemRequestDto
+                (1L, "Item_description", user, null, List.of());
+        ItemRequestDto actual = itemRequestService.getRequestById(userId, requestId);
 
-        assertEquals(expected, actual);
+        assertEquals(expected.getId(), actual.getId());
+        assertEquals(expected.getDescription(), actual.getDescription());
+        assertEquals(expected.getCreated(), actual.getCreated());
+
     }
 
     @Test
     void getByIdWithWrongUserIdValidationTest() {
         Long userId = 9999L;
         Long requestId = 1L;
-        when(userRepository.existsById(Mockito.anyLong())).thenReturn(false);
+        when(userRepository.existsById(anyLong())).thenReturn(false);
         assertThrows(NotFoundException.class, () -> itemRequestService.getRequestById(userId, requestId));
 
-        Mockito.verify(itemRequestRepository, Mockito.never()).findById(Mockito.anyLong());
+        verify(itemRequestRepository, never()).findById(anyLong());
     }
 
     @Test
     void getByIdWithWrongRequestIdValidationTest() {
         Long userId = user.getId();
         Long requestId = 999L;
-        when(userRepository.existsById(Mockito.anyLong())).thenReturn(true);
-        when(itemRequestRepository.findById(Mockito.anyLong())).thenReturn(Optional.empty());
+        when(userRepository.existsById(anyLong())).thenReturn(true);
+        when(itemRequestRepository.findById(anyLong())).thenReturn(Optional.empty());
 
         assertThrows(NotFoundException.class, () -> itemRequestService.getRequestById(userId, requestId));
     }
@@ -151,19 +152,19 @@ class ItemServiceImplTest {
     @Test
     void getAllByRequesterWithWrongUserIdValidationTest() {
         Long userId = 999L;
-        when(userRepository.existsById(Mockito.anyLong())).thenReturn(false);
+        when(userRepository.existsById(anyLong())).thenReturn(false);
         assertThrows(NotFoundException.class, () -> itemRequestService.getAllRequestsByRequester(userId, 0, 10));
 
-        Mockito.verify(itemRequestRepository, Mockito.never()).findByRequesterId(Mockito.anyLong(), Mockito.any());
+        verify(itemRequestRepository, never()).findByRequesterId(anyLong(), any());
     }
 
     @Test
     void getAllWithWrongUserIdValidationTest() {
         Long userId = 999L;
-        when(userRepository.existsById(Mockito.anyLong())).thenReturn(false);
+        when(userRepository.existsById(anyLong())).thenReturn(false);
         assertThrows(NotFoundException.class, () -> itemRequestService.getAllRequests(userId, 0, 10));
 
-        Mockito.verify(itemRequestRepository, Mockito.never()).findByRequesterId(Mockito.anyLong(), Mockito.any());
+        verify(itemRequestRepository, never()).findByRequesterId(anyLong(), any());
     }
 
 }

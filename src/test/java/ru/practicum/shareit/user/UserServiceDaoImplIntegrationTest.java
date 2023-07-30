@@ -18,26 +18,28 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class UserServiceDaoImplIntegrationTest {
     private final UserService userService;
     private UserDto userOne;
-    private UserDto userAnother;
+    private UserDto userSecond;
 
     @BeforeEach
     void beforeEach() {
         userOne = UserDto.builder()
+                .id(1L)
                 .name("User_name")
-                .email("user@test.testz")
+                .email("usersone@test.testz")
                 .build();
 
-        userAnother = UserDto.builder()
+        userSecond = UserDto.builder()
+                .id(2L)
                 .name("User_name")
-                .email("user@test.testz")
+                .email("usersecond@test.testz")
                 .build();
     }
 
     @Test
     public void getAllUsersTest() {
         userService.createUser(userOne);
-        userService.createUser(userAnother);
-        List<UserDto> expectedUsers = List.of(userOne, userAnother);
+        userService.createUser(userSecond);
+        List<UserDto> expectedUsers = List.of(userOne, userSecond);
 
         List<UserDto> actualUsers = userService.getAllUsers();
         assertEquals(expectedUsers.size(), actualUsers.size());
