@@ -2,16 +2,15 @@ package ru.practicum.shareit.request;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.exception.NotFoundException;
-import ru.practicum.shareit.item.dto.ItemMapper;
-import ru.practicum.shareit.item.dto.ItemInRequest;
 import ru.practicum.shareit.item.ItemRepository;
+import ru.practicum.shareit.item.dto.ItemInRequest;
+import ru.practicum.shareit.item.dto.ItemMapper;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
 import ru.practicum.shareit.request.dto.ItemRequestMapper;
 import ru.practicum.shareit.request.dto.ItemRequestShortDto;
@@ -68,22 +67,29 @@ public class ItemRequestServiceImpl implements ItemRequestService {
     @Override
     public List<ItemRequestDto> getAllRequestsByRequester(Long id, int from, int size) {
         validateUser(id);
-        Pageable pageable = PageRequest.of(from, size).withSort(Sort.by("created").descending());
-        Page<ItemRequestDto> requests = itemRequestsRepository
-                .findByRequesterId(id, pageable).map(this::setItemsByItemRequest);
+        Pageable pageable = PageRequest.of(from, size, Sort.by("created").descending());
+        List<ItemRequest> itemRequestsPage = itemRequestsRepository.findByRequesterId(id, pageable);
 
         log.info("Get requests by requester with id = {}", id);
-        return requests.stream().collect(Collectors.toList());
+
+        return itemRequestsPage.stream()
+                .map(this::setItemsByItemRequest)
+                .collect(Collectors.toList());
     }
 
     @Override
     public List<ItemRequestDto> getAllRequests(Long id, int from, int size) {
         validateUser(id);
-        Pageable pageable = PageRequest.of(from, size).withSort(Sort.by("created").descending());
+        Pageable pageable = PageRequest.of(from, size, Sort.by("created").descending());
 
         log.info("Get all requests");
-        return itemRequestsRepository.findAllByRequesterIdNot(id, pageable).map(this::setItemsByItemRequest)
-                .stream().collect(Collectors.toList());
+        List<ItemRequestDto> itemRequestDtos = itemRequestsRepository
+                .findAllByRequesterIdNot(id, pageable)
+                .stream()
+                .map(this::setItemsByItemRequest)
+                .collect(Collectors.toList());
+
+        return itemRequestDtos;
     }
 
 
