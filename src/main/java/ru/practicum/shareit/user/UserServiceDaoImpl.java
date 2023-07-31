@@ -2,7 +2,6 @@ package ru.practicum.shareit.user;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.exception.AlreadyExistsException;
@@ -31,7 +30,7 @@ public class UserServiceDaoImpl implements UserService {
         log.info("User with email = {}  has been created", userDto.getEmail());
         try {
             return userToUserDto(repository.save(user));
-        } catch (DataIntegrityViolationException e) {
+        } catch (AlreadyExistsException e) {
             throw new AlreadyExistsException(String.format(
                     "User %s has been registered yet", userDto.getEmail()
             ));
@@ -70,7 +69,7 @@ public class UserServiceDaoImpl implements UserService {
         repository.saveAndFlush(user);
         try {
             return userToUserDto(user);
-        } catch (DataIntegrityViolationException e) {
+        } catch (AlreadyExistsException e) {
             throw new AlreadyExistsException("Already exists");
         }
     }

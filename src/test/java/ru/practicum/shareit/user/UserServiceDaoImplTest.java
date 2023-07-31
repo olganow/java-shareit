@@ -6,6 +6,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import ru.practicum.shareit.exception.AlreadyExistsException;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.exception.ValidationException;
 import ru.practicum.shareit.user.dto.UserDto;
@@ -14,6 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -65,9 +67,16 @@ class UserServiceDaoImplTest {
         assertNotNull(actualNewUser);
         assertEquals(user.getId(), actualNewUser.getId());
         assertEquals(user.getEmail(), actualNewUser.getEmail());
+        assertThat(user).hasFieldOrProperty("id");
         verify(userRepository, times(1)).save(any());
     }
 
+    @Test
+    void createUserWithAlreadyExistsExceptionValidationTest() {
+        when(userRepository.save(any())).thenThrow(AlreadyExistsException.class);
+
+        assertThatThrownBy(() -> userService.createUser(userDto)).isInstanceOf(AlreadyExistsException.class);
+    }
 
     @Test
     void createUserWithInvalidEmailValidationTest() {
@@ -86,6 +95,13 @@ class UserServiceDaoImplTest {
         assertNotNull(actualUser);
         assertEquals(user.getId(), actualUser.getId());
         assertEquals(user.getEmail(), actualUser.getEmail());
+    }
+
+    @Test
+    void getByIdWithNotFoundExceptionValidationTest() {
+        when(userRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> userService.getUserById(1L)).isInstanceOf(NotFoundException.class);
     }
 
     @Test
@@ -136,6 +152,14 @@ class UserServiceDaoImplTest {
         Long userId = 999L;
 
         assertThatThrownBy(() -> userService.updateUserById(userId, userDto)).isInstanceOf(NotFoundException.class);
+    }
+
+    @Test
+    void updateUserByIdWithAlreadyExistsExceptionValidationTest() {
+        UserDto userDtoThird = new UserDto(999L, "User_name", "user@test.testz");
+        when(userRepository.findById(userDtoThird.getId())).thenThrow(AlreadyExistsException.class);
+        Long userId = 999L;
+        assertThatThrownBy(() -> userService.updateUserById(userId, userDto)).isInstanceOf(AlreadyExistsException.class);
     }
 
     @Test

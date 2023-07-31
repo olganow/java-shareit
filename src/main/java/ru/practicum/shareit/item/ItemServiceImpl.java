@@ -6,10 +6,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.practicum.shareit.booking.dto.BookingItemDto;
-import ru.practicum.shareit.booking.dto.BookingMapper;
 import ru.practicum.shareit.booking.BookingRepository;
 import ru.practicum.shareit.booking.Status;
+import ru.practicum.shareit.booking.dto.BookingItemDto;
+import ru.practicum.shareit.booking.dto.BookingMapper;
 import ru.practicum.shareit.exception.NotAvailableException;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.item.comment.Comment;
@@ -21,18 +21,23 @@ import ru.practicum.shareit.item.dto.ItemMapper;
 import ru.practicum.shareit.item.dto.ItemShortDto;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.request.ItemRequestRepository;
+import ru.practicum.shareit.user.User;
+import ru.practicum.shareit.user.UserRepository;
 import ru.practicum.shareit.user.UserService;
 
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static java.util.Comparator.comparing;
 import static org.springframework.data.domain.Sort.Direction.DESC;
 import static ru.practicum.shareit.item.comment.CommentMapper.commentToCommentDto;
-import static ru.practicum.shareit.item.dto.ItemMapper.*;
-import static ru.practicum.shareit.user.UserMapper.userDtoToOwner;
+import static ru.practicum.shareit.item.dto.ItemMapper.itemShortDtoToItem;
+import static ru.practicum.shareit.item.dto.ItemMapper.itemToItemDto;
 import static ru.practicum.shareit.user.UserMapper.userDtotoUser;
 
 @Slf4j
@@ -45,18 +50,22 @@ public class ItemServiceImpl implements ItemService {
     private final CommentRepository commentRepository;
     private final UserService userService;
     private final ItemRequestRepository requestsRepository;
+    private final UserRepository userRepository;
+
 
     public ItemDto createItem(ItemShortDto itemShortDto, Long userId) {
-        ItemDto itemDto = itemShortDtoToItemDto(itemShortDto);
-        itemDto.setOwner(userDtoToOwner(userService.getUserById(userId)));
-        Item item = itemDtoToItem(itemDto);
+        User user = userRepository.findById(userId).orElseThrow(()
+                -> new NotFoundException("User with id = : " + userId + " has not found"));
+        Item item = itemShortDtoToItem(itemShortDto);
+        item.setOwner(user);
         Long requestId = itemShortDto.getRequestId();
         if (requestId != null) {
-            item.setRequest(requestsRepository.findById(requestId)
-                    .orElseThrow(() -> new NotFoundException("Request with Id:" + requestId + "doesn't found")));
+            item.setRequest(requestsRepository.findById(requestId).orElseThrow(()
+                    -> new NotFoundException("Request with Id:" + requestId + "doesn't found")));
         }
-        log.info("Item with id = {} has been created", itemDto.getId());
-        return itemToItemDto(itemRepository.save(item));
+        itemRepository.save(item);
+        log.info("Item with id = {} has been created", item.getId());
+        return itemToItemDto(item);
     }
 
     @Transactional(readOnly = true)

@@ -158,7 +158,7 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public BookingDto approveBooking(Long id, Long bookingId, Boolean approved) {
-        validateUser(id);
+
         Booking booking = validateBooking(bookingId);
 
         if (!booking.getItem().getOwner().getId().equals(id)) {
@@ -172,8 +172,9 @@ public class BookingServiceImpl implements BookingService {
         } else {
             booking.setStatus(Status.REJECTED);
         }
+        bookingRepository.save(booking);
         log.info("Get approve booking with id  = {}", bookingId);
-        return bookingToBookingDto(bookingRepository.save(booking));
+        return bookingToBookingDto((booking));
     }
 
     private Booking validateBooking(Long bookingId) {

@@ -7,6 +7,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import ru.practicum.shareit.booking.dto.BookingDto;
+import ru.practicum.shareit.booking.dto.BookingMapper;
 import ru.practicum.shareit.booking.dto.BookingShortDto;
 import ru.practicum.shareit.exception.*;
 import ru.practicum.shareit.item.ItemRepository;
@@ -126,6 +127,30 @@ class BookingServiceImplTest {
         BookingShortDto shortDto = new BookingShortDto(userId, start, end, itemId);
 
         assertThrows(NotFoundException.class, () -> bookingService.createBooking(userId, shortDto));
+    }
+
+    @Test
+    void createBookingReturnItemNotAvailableExceptionDateTest() {
+        Long userId = userWithBooking.getId();
+        Long itemId = item.getId();
+        LocalDateTime start = LocalDateTime.now().plusDays(1);
+        LocalDateTime end = LocalDateTime.now().minusDays(2);
+
+        when(itemRepository.findById(itemId)).thenThrow(NotAvailableException.class);
+        BookingShortDto shortDto = new BookingShortDto(userId, start, end, itemId);
+
+        assertThrows(NotAvailableException.class, () -> bookingService.createBooking(userId, shortDto));
+    }
+
+    @Test
+    void createBookingReturnItemNotAvailableExceptionItemIdTest() {
+        Long userId = userWithBooking.getId();
+        Long itemId = 999L;
+
+        when(itemRepository.findById(itemId)).thenThrow(NotAvailableException.class);
+        BookingShortDto shortDto = new BookingShortDto(userId, start, end, itemId);
+
+        assertThrows(NotAvailableException.class, () -> bookingService.createBooking(userId, shortDto));
     }
 
     @Test
@@ -335,5 +360,48 @@ class BookingServiceImplTest {
         assertThrows(NotFoundException.class, () -> bookingService.getAllBookingByState(userId, state, 0, 10));
     }
 
+    @Test
+    void getApproveTest() {
+        Long userId = user.getId();
+        Long bookingId = booking.getId();
+        BookingDto bookingDto = BookingMapper.bookingToBookingDto(booking);
+        BookingDto bookingDtoActual;
+        when(bookingRepository.findById(any())).thenReturn(Optional.ofNullable(booking));
+        bookingDtoActual = bookingService.approveBooking(userId, bookingId, true);
+        bookingDto.setStatus(Status.APPROVED);
+
+        assertEquals(bookingDto.getStatus(), bookingDtoActual.getStatus());
+    }
+
+    @Test
+    void getApproveWithRejectedStatusTest() {
+        Long userId = user.getId();
+        Long bookingId = booking.getId();
+        BookingDto bookingDto = BookingMapper.bookingToBookingDto(booking);
+        BookingDto bookingDtoActual;
+        when(bookingRepository.findById(any())).thenReturn(Optional.ofNullable(booking));
+        bookingDtoActual = bookingService.approveBooking(userId, bookingId, false);
+        bookingDto.setStatus(Status.REJECTED);
+
+        assertEquals(bookingDto.getStatus(), bookingDtoActual.getStatus());
+    }
+
+    @Test
+    void getApproveWithWrongUserIdValidationTest() {
+        Long userId = 999L;
+        Long bookingId = booking.getId();
+        when(bookingRepository.findById(any())).thenReturn(Optional.ofNullable(booking));
+
+        assertThrows(NotFoundException.class, () -> bookingService.approveBooking(userId, bookingId, true));
+    }
+
+    @Test
+    void getApproveWithNotAvailableExceptionValidationTest() {
+        Long userId = user.getId();
+        Long bookingId = booking.getId();
+        when(bookingRepository.findById(any())).thenReturn(Optional.ofNullable(booking));
+        booking.setStatus(Status.APPROVED);
+        assertThrows(NotAvailableException.class, () -> bookingService.approveBooking(userId, bookingId, false));
+    }
 
 }

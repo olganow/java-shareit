@@ -183,4 +183,27 @@ class ItemRequestControllerTest {
                 .andExpect(status().isOk());
     }
 
+    @Test
+    void getAllByRequester() throws Exception {
+        Long userId = 1L;
+        Integer from = 0;
+        Integer size = 10;
+        ItemRequestDto itemRequestDto = new ItemRequestDto(1L, "description", user, null,
+                List.of());
+        when(itemRequestService.getAllRequestsByRequester(anyLong(), anyInt(), anyInt()))
+                .thenReturn(List.of(itemRequestDto));
+        String result = mockMvc.perform(get("/requests")
+                        .header("X-Sharer-User-Id", userId)
+                        .param("from", String.valueOf(from))
+                        .param("size", String.valueOf(size)))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        assertEquals(objectMapper.writeValueAsString(List.of(itemRequestDto)), result);
+    }
+
+
 }

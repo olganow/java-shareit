@@ -1,8 +1,5 @@
 package ru.practicum.shareit.request;
 
-import static org.junit.jupiter.api.Assertions.*;
-
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -23,6 +20,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -196,6 +194,47 @@ class ItemRequestServiceImplTest {
         assertEquals(expected.getDescription(), actual.getDescription());
         assertEquals(expected.getCreated(), actual.getCreated());
         assertEquals(expected.getItems(), actual.getItems());
+    }
+
+
+    @Test
+    void createWithWrongOwnerWithNotFoundExceptionTest() {
+        Long userId = 999L;
+        when(userRepository.findById(userId)).thenReturn(Optional.empty());
+        assertThrows(NotFoundException.class, () -> itemRequestService.createRequest(userId, itemRequestShortDto));
+
+        verify(itemRequestRepository, never()).findById(any());
+        verify(itemRepository, never()).save(any());
+    }
+
+
+    @Test
+    void getByIdWithWrongUserIdValidationTest() {
+        Long userId = 9999L;
+        Long requestId = 1L;
+        when(userRepository.existsById(anyLong())).thenReturn(false);
+        assertThrows(NotFoundException.class, () -> itemRequestService.getRequestById(userId, requestId));
+
+        verify(itemRequestRepository, never()).findById(anyLong());
+    }
+
+    @Test
+    void getByIdWithWrongRequestIdValidationTest() {
+        Long userId = user.getId();
+        Long requestId = 999L;
+        when(userRepository.existsById(anyLong())).thenReturn(true);
+        when(itemRequestRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+        assertThrows(NotFoundException.class, () -> itemRequestService.getRequestById(userId, requestId));
+    }
+
+    @Test
+    void getAllByRequesterWithWrongUserIdValidationTest() {
+        Long userId = 999L;
+        when(userRepository.existsById(anyLong())).thenReturn(false);
+        assertThrows(NotFoundException.class, () -> itemRequestService.getAllRequestsByRequester(userId, 0, 10));
+
+        verify(itemRequestRepository, never()).findByRequesterId(anyLong(), any());
     }
 
 }
