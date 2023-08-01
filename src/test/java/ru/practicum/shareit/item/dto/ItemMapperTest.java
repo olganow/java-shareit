@@ -85,14 +85,4 @@ class ItemMapperTest {
         assertThat(itemDto.getAvailable()).isEqualTo(true);
         assertThat(itemDto.getComments()).isEqualTo(List.of());
     }
-
-    @Test
-    void itemToItemInRequestTest() {
-        ItemInRequest itemInRequest = ItemMapper.itemToItemInRequest(item);
-
-        assertThat(itemInRequest.getId()).isEqualTo(1L);
-        assertThat(itemInRequest.getName()).isEqualTo("Item_name");
-        assertThat(itemInRequest.getDescription()).isEqualTo("Item_description");
-        assertThat(itemInRequest.getAvailable()).isEqualTo(true);
-    }
 }

@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import ru.practicum.shareit.item.dto.ItemInRequest;
+import ru.practicum.shareit.item.dto.ItemDto;
 
 import java.sql.Timestamp;
 import java.util.List;
@@ -22,6 +22,6 @@ public class ItemRequestDto {
 
     private Timestamp created;
 
-    private List<ItemInRequest> items;
+    private List<ItemDto> items;
 
 }

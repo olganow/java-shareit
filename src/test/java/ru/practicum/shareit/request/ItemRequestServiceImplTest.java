@@ -13,7 +13,6 @@ import ru.practicum.shareit.request.dto.ItemRequestDto;
 import ru.practicum.shareit.request.dto.ItemRequestShortDto;
 import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.UserRepository;
-import ru.practicum.shareit.user.UserService;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;

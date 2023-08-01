@@ -2,6 +2,7 @@ package ru.practicum.shareit.item.dto;
 
 import lombok.experimental.UtilityClass;
 import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.request.ItemRequest;
 import ru.practicum.shareit.user.User;
 
 import java.util.ArrayList;
@@ -41,7 +42,7 @@ public class ItemMapper {
                 .build();
     }
 
-    public static ItemInRequest itemToItemInRequest(Item item) {
+  /*  public static ItemInRequest itemToItemInRequest(Item item) {
         return ItemInRequest.builder()
                 .id(item.getId())
                 .name(item.getName())
@@ -51,7 +52,16 @@ public class ItemMapper {
                 .requestId(item.getRequest() != null ? item.getRequest().getId() : null)
                 .build();
     }
+*/
 
+    public static ItemRequest itemToItemRequest(Item item) {
+        return ItemRequest.builder()
+                .id(item.getId())
+                .description(item.getDescription())
+                .requester(item.getOwner())
+                .created(item.getRequest().getCreated())
+                .build();
+    }
     public static Item itemShortDtoToItem(ItemShortDto itemShortDto) {
         return Item.builder()
                 .id(itemShortDto.getId())

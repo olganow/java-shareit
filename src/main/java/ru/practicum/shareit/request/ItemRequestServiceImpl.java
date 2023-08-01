@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.item.ItemRepository;
-import ru.practicum.shareit.item.dto.ItemInRequest;
+import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemMapper;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
 import ru.practicum.shareit.request.dto.ItemRequestMapper;
@@ -95,8 +95,8 @@ public class ItemRequestServiceImpl implements ItemRequestService {
 
     private ItemRequestDto setItemsByItemRequest(ItemRequest itemRequest) {
         ItemRequestDto request = itemRequestToRequestWithItems(itemRequest);
-        List<ItemInRequest> items = itemRepository.findAllByRequestId(itemRequest.getId()).stream()
-                .map(ItemMapper::itemToItemInRequest).collect(Collectors.toList());
+        List<ItemDto> items = itemRepository.findAllByRequestId(itemRequest.getId()).stream()
+                .map(ItemMapper::itemToItemDto).collect(Collectors.toList());
 
         request.setItems(items.isEmpty() ? new ArrayList<>() : items);
 
