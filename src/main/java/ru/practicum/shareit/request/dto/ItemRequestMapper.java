@@ -9,13 +9,13 @@ import java.util.List;
 @UtilityClass
 public class ItemRequestMapper {
 
-    public static ItemRequest itemRequestShortDtoToItemRequest(ItemRequestShortDto itemRequestShortDto) {
+    public ItemRequest itemRequestShortDtoToItemRequest(ItemRequestShortDto itemRequestShortDto) {
         return ItemRequest.builder()
                 .description(itemRequestShortDto.getDescription())
                 .build();
     }
 
-    public static ItemRequestDto itemRequestToRequestDto(ItemRequest itemRequest) {
+    public ItemRequestDto itemRequestToRequestDto(ItemRequest itemRequest) {
         return ItemRequestDto.builder()
                 .id(itemRequest.getId())
                 .description(itemRequest.getDescription())
@@ -24,7 +24,7 @@ public class ItemRequestMapper {
                 .build();
     }
 
-    public static ItemRequestDto itemRequestToRequestWithItems(ItemRequest itemRequest) {
+    public ItemRequestDto itemRequestToRequestWithItems(ItemRequest itemRequest) {
         return ItemRequestDto.builder()
                 .id(itemRequest.getId())
                 .description(itemRequest.getDescription())
@@ -32,14 +32,14 @@ public class ItemRequestMapper {
                 .build();
     }
 
-    public static ItemRequestShortDto itemRequestToItemRequestShortDto(ItemRequest itemRequest) {
+    public ItemRequestShortDto itemRequestToItemRequestShortDto(ItemRequest itemRequest) {
         return ItemRequestShortDto.builder()
                 .id(itemRequest.getId())
                 .description(itemRequest.getDescription())
                 .build();
     }
 
-    public static ItemRequestDto toItemRequestDto(ItemRequest itemRequest, List<ItemDto> items) {
+    public ItemRequestDto toItemRequestDto(ItemRequest itemRequest, List<ItemDto> items) {
         return new ItemRequestDto(itemRequest.getId(), itemRequest.getDescription(),
                 itemRequest.getRequester().getId(),
                 itemRequest.getCreated(), items);

@@ -5,7 +5,7 @@ import ru.practicum.shareit.booking.Booking;
 
 @UtilityClass
 public class BookingMapper {
-    public static Booking bookingToBookingShortDto(BookingShortDto bookingShortDto) {
+    public Booking bookingToBookingShortDto(BookingShortDto bookingShortDto) {
         return Booking.builder()
                 .id(bookingShortDto.getId())
                 .start(bookingShortDto.getStart())
@@ -13,7 +13,7 @@ public class BookingMapper {
                 .build();
     }
 
-    public static BookingItemDto bookingToItemBookingDto(Booking booking) {
+    public BookingItemDto bookingToItemBookingDto(Booking booking) {
         return BookingItemDto.builder()
                 .id(booking.getId())
                 .itemId(booking.getItem().getId())
@@ -23,7 +23,7 @@ public class BookingMapper {
                 .build();
     }
 
-    public static BookingDto bookingToBookingDto(Booking booking) {
+    public BookingDto bookingToBookingDto(Booking booking) {
         return BookingDto.builder()
                 .id(booking.getId())
                 .start(booking.getStart())
