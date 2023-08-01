@@ -68,11 +68,5 @@ public class ErrorHandler {
         return new ErrorResponse("Already exists error", e.getMessage());
     }
 
-    @ExceptionHandler
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public Map<String, String> handleValidationException(final ValidationException e) {
-        log.debug("Validation exception: {}", e.getMessage());
-        return Map.of("error", "Validation exception",
-                "errorMessage", e.getMessage());
-    }
+
 }

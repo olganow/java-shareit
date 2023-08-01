@@ -4,6 +4,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.MockitoAnnotations.initMocks;
 
@@ -19,7 +20,7 @@ public class ErrorHandlerTest {
 
     @Test
     public void alreadyExistsExceptionTest() {
-        NotFoundException exception = new NotFoundException("Already exists erro");
+        AlreadyExistsException exception = new AlreadyExistsException("Already exists error");
         ErrorResponse response = errorHandler.alreadyExistsException(exception);
         assertEquals("Already exists error", response.getError());
     }
