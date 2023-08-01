@@ -9,7 +9,6 @@ public class ItemRequestMapper {
     public static ItemRequest itemRequestShortDtoToItemRequest(ItemRequestShortDto itemRequestShortDto) {
         return ItemRequest.builder()
                 .description(itemRequestShortDto.getDescription())
-                .created(itemRequestShortDto.getCreated())
                 .build();
     }
 
@@ -18,7 +17,7 @@ public class ItemRequestMapper {
                 .id(itemRequest.getId())
                 .description(itemRequest.getDescription())
                 .created(itemRequest.getCreated())
-                .requester(itemRequest.getRequester() != null ? itemRequest.getRequester() : null)
+                .requesterId(itemRequest.getRequester().getId() != null ? itemRequest.getRequester().getId() : null)
                 .build();
     }
 
@@ -34,8 +33,6 @@ public class ItemRequestMapper {
         return ItemRequestShortDto.builder()
                 .id(itemRequest.getId())
                 .description(itemRequest.getDescription())
-                .requesterId(itemRequest.getRequester().getId() != null ? itemRequest.getRequester().getId() : null)
-                .created(itemRequest.getCreated())
                 .build();
     }
 

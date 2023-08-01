@@ -41,8 +41,6 @@ class ItemRequestControllerTest {
     private ItemRequestDto itemRequestDto;
     private ItemRequestDto itemRequestDtoAnother;
     private ItemRequestShortDto itemRequestShortDto;
-
-    private User user;
     private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS");
 
     @BeforeEach
@@ -55,7 +53,7 @@ class ItemRequestControllerTest {
                 .build();
         itemRequestDto = ItemRequestDto.builder()
                 .description("Item request description")
-                .requester(user)
+                .requesterId(user.getId())
                 .created(Timestamp.valueOf(now))
                 .build();
 
@@ -68,8 +66,6 @@ class ItemRequestControllerTest {
 
         itemRequestShortDto = ItemRequestShortDto.builder()
                 .description("Item request description")
-                .requesterId(user.getId())
-                .created(Timestamp.valueOf(now))
                 .build();
     }
 
@@ -116,20 +112,6 @@ class ItemRequestControllerTest {
                         .contentType("application/json")
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
-    }
-
-
-    @Test
-    public void createRequestWithWrongTimeValidationTest() throws Exception {
-        itemRequestShortDto.setCreated(Timestamp.valueOf(LocalDateTime.now().plusDays(24)));
-        when(itemRequestService.createRequest(anyLong(), any()))
-                .thenThrow(new ValidationException(""));
-        mockMvc.perform(post("/requests")
-                        .content(objectMapper.writeValueAsString(itemRequestShortDto))
-                        .header("X-Sharer-User-Id", 1)
-                        .contentType("application/json")
-                        .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isInternalServerError());
     }
 
     @Test
@@ -188,7 +170,7 @@ class ItemRequestControllerTest {
         Long userId = 1L;
         Integer from = 0;
         Integer size = 10;
-        ItemRequestDto itemRequestDto = new ItemRequestDto(1L, "description", user, null,
+        ItemRequestDto itemRequestDto = new ItemRequestDto(1L, "description", userId, null,
                 List.of());
         when(itemRequestService.getAllRequestsByRequester(anyLong(), anyInt(), anyInt()))
                 .thenReturn(List.of(itemRequestDto));

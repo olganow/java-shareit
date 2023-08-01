@@ -29,7 +29,7 @@ class ItemRequestDtoTest {
                 .id(1L)
                 .description("Item_description")
                 .created(Timestamp.valueOf(now))
-                .requester(user)
+                .requesterId(user.getId())
                 .build();
         JsonContent<ItemRequestDto> result = json.write(itemRequestDto);
 

@@ -20,10 +20,10 @@ public class Item {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(length = 100)
+    @Column(length = 255)
     private String name;
 
-    @Column(length = 200)
+    @Column(length = 512)
     private String description;
 
     @Column(name = "is_available")

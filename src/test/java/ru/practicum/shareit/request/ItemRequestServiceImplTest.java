@@ -31,8 +31,6 @@ class ItemRequestServiceImplTest {
     private ItemRequestRepository itemRequestRepository;
     @Mock
     private UserRepository userRepository;
-    @Mock
-    private UserService userService;
     @InjectMocks
     private ItemRequestServiceImpl itemRequestService;
     @Mock
@@ -76,7 +74,7 @@ class ItemRequestServiceImplTest {
 
         addItemRequestDto = ItemRequestDto.builder()
                 .id(itemRequest.getId())
-                .requester(itemRequest.getRequester())
+                .requesterId(itemRequest.getRequester().getId())
                 .description("Description")
                 .created(itemRequest.getCreated())
                 .items(List.of())
@@ -84,9 +82,7 @@ class ItemRequestServiceImplTest {
 
         itemRequestShortDto = ItemRequestShortDto.builder()
                 .id(itemRequest.getId())
-                .requesterId(itemRequest.getRequester().getId())
                 .description("Description")
-                .created(itemRequest.getCreated())
                 .build();
     }
 
@@ -107,7 +103,7 @@ class ItemRequestServiceImplTest {
     void createRequestWithWrongUserIdValidationTest() {
         Long userId = 999L;
         when(userRepository.findById(any())).thenReturn(Optional.empty());
-        ItemRequestShortDto dtoShort = new ItemRequestShortDto(1L, "description", userId, null);
+        ItemRequestShortDto dtoShort = new ItemRequestShortDto(1L, "description");
         assertThrows(NotFoundException.class, () -> itemRequestService.createRequest(userId, dtoShort));
 
         verify(itemRequestRepository, never()).save(any());
@@ -148,7 +144,7 @@ class ItemRequestServiceImplTest {
     void getAllRequestTest() {
         Long userId = user.getId();
         ItemRequest itemRequest = new ItemRequest(1L, "description", user, null);
-        ItemRequestDto itemRequestDto = new ItemRequestDto(1L, "description", user,
+        ItemRequestDto itemRequestDto = new ItemRequestDto(1L, "description", userId,
                 null, List.of());
         when(userRepository.existsById(anyLong())).thenReturn(true);
         when(itemRequestRepository.findAllByRequesterIdNot(anyLong(), any()))
@@ -166,7 +162,7 @@ class ItemRequestServiceImplTest {
     void getAllRequestsByRequesterTest() {
         Long userId = user.getId();
         ItemRequest itemRequest = new ItemRequest(1L, "description", user, null);
-        ItemRequestDto itemRequestDto = new ItemRequestDto(1L, "description", user, null, List.of());
+        ItemRequestDto itemRequestDto = new ItemRequestDto(1L, "description", userId, null, List.of());
         when(userRepository.existsById(anyLong())).thenReturn(true);
         when(itemRequestRepository.findByRequesterId(anyLong(), any()))
                 .thenReturn(List.of(itemRequest));
@@ -187,7 +183,7 @@ class ItemRequestServiceImplTest {
         when(itemRequestRepository.findById(anyLong())).thenReturn(Optional.of(itemRequest));
         when(itemRepository.findAllByRequestId(anyLong())).thenReturn(List.of());
 
-        ItemRequestDto expected = new ItemRequestDto(1L, "description", user, null, List.of());
+        ItemRequestDto expected = new ItemRequestDto(1L, "description", userId, null, List.of());
         ItemRequestDto actual = itemRequestService.getRequestById(userId, requestId);
 
         assertEquals(expected.getId(), actual.getId());

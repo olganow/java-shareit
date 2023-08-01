@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.practicum.shareit.exception.AlreadyExistsException;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.item.ItemRepository;
 import ru.practicum.shareit.user.dto.UserDto;
@@ -22,19 +21,12 @@ import static ru.practicum.shareit.user.UserMapper.userToUserDto;
 @Transactional
 public class UserServiceDaoImpl implements UserService {
     private final UserRepository repository;
-    private final ItemRepository itemRepository;
 
     @Override
     public UserDto createUser(UserDto userDto) {
         User user = userDtotoUser(userDto);
         log.info("User with email = {}  has been created", userDto.getEmail());
-        try {
-            return userToUserDto(repository.save(user));
-        } catch (AlreadyExistsException e) {
-            throw new AlreadyExistsException(String.format(
-                    "User %s has been registered yet", userDto.getEmail()
-            ));
-        }
+        return userToUserDto(repository.save(user));
     }
 
     @Transactional(readOnly = true)
@@ -67,11 +59,7 @@ public class UserServiceDaoImpl implements UserService {
         }
         log.info("User with id = {} is updated", userDto.getId());
         repository.saveAndFlush(user);
-        try {
-            return userToUserDto(user);
-        } catch (AlreadyExistsException e) {
-            throw new AlreadyExistsException("Already exists");
-        }
+        return userToUserDto(user);
     }
 
     @Override

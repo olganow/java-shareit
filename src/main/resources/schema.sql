@@ -14,10 +14,9 @@ CREATE TABLE IF NOT EXISTS requests
     description  VARCHAR(512)                     NOT NULL,
     requester_id BIGINT REFERENCES users (id),
     created      TIMESTAMP WITHOUT TIME ZONE,
-    CONSTRAINT PK_REQUEST PRIMARY KEY (id),
-   -- CONSTRAINT fk_requests_users_requester_id
-    CONSTRAINT FK_REQUESTS_USERS_REQUESTER_ID
-    foreign key (requester_id) references users
+    CONSTRAINT   PK_REQUEST PRIMARY KEY (id),
+    CONSTRAINT   FK_REQUESTS_USERS_REQUESTER_ID
+    foreign key  (requester_id) references users
 
 );
 

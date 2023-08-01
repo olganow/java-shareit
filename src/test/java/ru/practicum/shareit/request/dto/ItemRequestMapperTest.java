@@ -15,8 +15,6 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 class ItemRequestMapperTest {
     private Item item;
     private User user;
-    private Comment comment;
-    private final LocalDateTime start = LocalDateTime.now();
     private ItemRequest itemRequest;
 
     @BeforeEach
@@ -34,18 +32,16 @@ class ItemRequestMapperTest {
 
         assertThat(itemRequestDto.getId()).isEqualTo(itemRequest.getId());
         assertThat(itemRequestDto.getDescription()).isEqualTo(itemRequest.getDescription());
-        assertThat(itemRequestDto.getRequester()).isEqualTo(itemRequest.getRequester());
+        assertThat(itemRequestDto.getRequesterId()).isEqualTo(itemRequest.getRequester().getId());
         assertThat(itemRequestDto.getCreated()).isEqualTo(itemRequest.getCreated());
     }
 
     @Test
     void itemRequestShortDtoToItemRequestTest() {
-        ItemRequestShortDto itemRequestShortDto = new ItemRequestShortDto(itemRequest.getId(),
-                itemRequest.getDescription(), itemRequest.getRequester().getId(), itemRequest.getCreated());
+        ItemRequestShortDto itemRequestShortDto = new ItemRequestShortDto(itemRequest.getId(), itemRequest.getDescription());
         ItemRequest itemRequest = ItemRequestMapper.itemRequestShortDtoToItemRequest(itemRequestShortDto);
 
         assertThat(itemRequest.getDescription()).isEqualTo(itemRequestShortDto.getDescription());
-        assertThat(itemRequest.getCreated()).isEqualTo(itemRequestShortDto.getCreated());
     }
 
     @Test
