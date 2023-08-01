@@ -11,6 +11,7 @@ import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.item.ItemRepository;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemMapper;
+import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
 import ru.practicum.shareit.request.dto.ItemRequestMapper;
 import ru.practicum.shareit.request.dto.ItemRequestShortDto;
@@ -18,11 +19,11 @@ import ru.practicum.shareit.user.UserRepository;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
+import static java.util.stream.Collectors.groupingBy;
+import static java.util.stream.Collectors.toList;
 import static ru.practicum.shareit.request.dto.ItemRequestMapper.itemRequestToRequestDto;
 import static ru.practicum.shareit.request.dto.ItemRequestMapper.itemRequestToRequestWithItems;
 
@@ -56,51 +57,74 @@ public class ItemRequestServiceImpl implements ItemRequestService {
 
         if (itemRequestOptional.isPresent()) {
             ItemRequest itemRequest = itemRequestOptional.get();
-            log.info("Get requests by id = {}", id);
-            return setItemsByItemRequest(itemRequest);
+            log.info("Get request by id = {}", requestId);
+            ItemRequestDto request = itemRequestToRequestWithItems(itemRequest);
+            List<ItemDto> items = itemRepository.findAllByRequestId(requestId).stream()
+                    .map(ItemMapper::itemToItemDto).collect(Collectors.toList());
+
+            request.setItems(items.isEmpty() ? new ArrayList<>() : items);
+
+            return request;
         } else {
             throw new NotFoundException("Request hasn't found");
         }
-
     }
 
-    @Override
     public List<ItemRequestDto> getAllRequestsByRequester(Long id, int from, int size) {
         validateUser(id);
         Pageable pageable = PageRequest.of(from, size, Sort.by("created").descending());
-        List<ItemRequest> itemRequestsPage = itemRequestsRepository.findByRequesterId(id, pageable);
 
-        log.info("Get requests by requester with id = {}", id);
+        List<ItemRequest> itemRequests = itemRequestsRepository.findAllByRequesterId(id, pageable);
 
-        return itemRequestsPage.stream()
-                .map(this::setItemsByItemRequest)
+        List<ItemRequestDto> itemRequestDto = new ArrayList<>();
+        List<Long> requests = itemRequests.stream()
+                .map(ItemRequest::getId)
                 .collect(Collectors.toList());
+
+        List<Item> itemsByRequests = itemRepository.findByRequest_IdIn(requests);
+
+        Map<ItemRequest, List<Item>> itemRequestsByItem = itemsByRequests.stream()
+                .collect(groupingBy(Item::getRequest, toList()));
+
+        for (ItemRequest itemRequest : itemRequests) {
+            List<Item> items = itemRequestsByItem.getOrDefault(itemRequest, List.of());
+
+            List<ItemDto> itemDtos = items.stream()
+                    .map(ItemMapper::itemToItemDto)
+                    .collect(toList());
+            itemRequestDto.add(ItemRequestMapper.toItemRequestDto(itemRequest, itemDtos));
+        }
+        log.info("Get requests by requester with id = {}", id);
+        return itemRequestDto;
     }
 
-    @Override
+
     public List<ItemRequestDto> getAllRequests(Long id, int from, int size) {
         validateUser(id);
         Pageable pageable = PageRequest.of(from, size, Sort.by("created").descending());
 
-        log.info("Get all requests");
-        List<ItemRequestDto> itemRequestDtos = itemRequestsRepository
-                .findAllByRequesterIdNot(id, pageable)
-                .stream()
-                .map(this::setItemsByItemRequest)
+        List<ItemRequest> itemRequests = itemRequestsRepository.findAllByRequesterIdNot(id, pageable);
+
+        List<ItemRequestDto> itemRequestDto = new ArrayList<>();
+        List<Long> requests = itemRequests.stream()
+                .map(ItemRequest::getId)
                 .collect(Collectors.toList());
 
-        return itemRequestDtos;
-    }
+        List<Item> itemsByRequests = itemRepository.findByRequest_IdIn(requests);
 
+        Map<ItemRequest, List<Item>> itemRequestsByItem = itemsByRequests.stream()
+                .collect(groupingBy(Item::getRequest, toList()));
 
-    private ItemRequestDto setItemsByItemRequest(ItemRequest itemRequest) {
-        ItemRequestDto request = itemRequestToRequestWithItems(itemRequest);
-        List<ItemDto> items = itemRepository.findAllByRequestId(itemRequest.getId()).stream()
-                .map(ItemMapper::itemToItemDto).collect(Collectors.toList());
+        for (ItemRequest itemRequest : itemRequests) {
+            List<Item> items = itemRequestsByItem.getOrDefault(itemRequest, List.of());
 
-        request.setItems(items.isEmpty() ? new ArrayList<>() : items);
-
-        return request;
+            List<ItemDto> itemDtos = items.stream()
+                    .map(ItemMapper::itemToItemDto)
+                    .collect(toList());
+            itemRequestDto.add(ItemRequestMapper.toItemRequestDto(itemRequest, itemDtos));
+        }
+        log.info("Get all requests");
+        return itemRequestDto;
     }
 
     private void validateUser(Long id) {

@@ -163,8 +163,7 @@ class ItemRequestServiceImplTest {
         ItemRequest itemRequest = new ItemRequest(1L, "description", user, null);
         ItemRequestDto itemRequestDto = new ItemRequestDto(1L, "description", userId, null, List.of());
         when(userRepository.existsById(anyLong())).thenReturn(true);
-        when(itemRequestRepository.findByRequesterId(anyLong(), any()))
-                .thenReturn(List.of(itemRequest));
+        when(itemRequestRepository.findAllByRequesterId(anyLong(), any())).thenReturn(List.of(itemRequest));
         List<ItemRequestDto> expectedDtoList = List.of(itemRequestDto);
         List<ItemRequestDto> actualDtoList = itemRequestService.getAllRequestsByRequester(userId, 0, 10);
 
