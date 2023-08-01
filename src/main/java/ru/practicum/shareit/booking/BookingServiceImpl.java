@@ -77,9 +77,6 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public List<BookingDto> getAllBookingByState(Long id, String stateString, int from, int size) {
         validateUser(id);
-        if (from < 0) {
-            throw new NotAvailableException("Page is not valid");
-        }
         Pageable pageable = PageRequest.of(from / size, size, Sort.by(Sort.Direction.DESC, "start"));
         List<Booking> bookingList;
         LocalDateTime time = LocalDateTime.now();
@@ -118,9 +115,6 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public List<BookingDto> getAllOwnersBookingByState(Long id, String stateString, int from, int size) {
         validateUser(id);
-        if (from < 0) {
-            throw new NotAvailableException("Page is not valid");
-        }
         Pageable pageable = PageRequest.of(from / size, size, Sort.by(Sort.Direction.DESC, "start"));
         List<Booking> bookingList;
         LocalDateTime now = LocalDateTime.now();

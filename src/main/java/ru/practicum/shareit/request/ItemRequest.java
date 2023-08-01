@@ -9,7 +9,8 @@ import java.sql.Timestamp;
 import java.time.LocalDateTime;
 
 
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder

@@ -5,7 +5,7 @@ import lombok.experimental.UtilityClass;
 @UtilityClass
 public class CommentMapper {
 
-    public CommentDto commentToCommentDto(Comment comment) {
+    public static CommentDto commentToCommentDto(Comment comment) {
         return CommentDto.builder()
                 .id(comment.getId())
                 .text(comment.getText())

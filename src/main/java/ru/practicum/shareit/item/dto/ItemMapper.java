@@ -9,7 +9,7 @@ import java.util.ArrayList;
 @UtilityClass
 public class ItemMapper {
 
-    public ItemDto itemToItemDto(Item item) {
+    public static ItemDto itemToItemDto(Item item) {
         return ItemDto.builder()
                 .id(item.getId())
                 .name(item.getName())
@@ -21,7 +21,7 @@ public class ItemMapper {
                 .build();
     }
 
-    public Item itemDtoToItem(ItemDto itemDto) {
+    public static Item itemDtoToItem(ItemDto itemDto) {
         return Item.builder()
                 .id(itemDto.getId())
                 .name(itemDto.getName())
@@ -31,7 +31,7 @@ public class ItemMapper {
                 .build();
     }
 
-    public ItemDto itemShortDtoToItemDto(ItemShortDto itemShortDto) {
+    public static ItemDto itemShortDtoToItemDto(ItemShortDto itemShortDto) {
         return ItemDto.builder()
                 .id(itemShortDto.getId())
                 .name(itemShortDto.getName())
@@ -41,7 +41,7 @@ public class ItemMapper {
                 .build();
     }
 
-    public Item itemShortDtoToItem(ItemShortDto itemShortDto) {
+    public static Item itemShortDtoToItem(ItemShortDto itemShortDto) {
         return Item.builder()
                 .id(itemShortDto.getId())
                 .name(itemShortDto.getName())
@@ -50,7 +50,7 @@ public class ItemMapper {
                 .build();
     }
 
-    public ItemShortDto itemDtoToItemShortDto(ItemDto itemDto) {
+    public static ItemShortDto itemDtoToItemShortDto(ItemDto itemDto) {
         return ItemShortDto.builder()
                 .id(itemDto.getId())
                 .name(itemDto.getName())
