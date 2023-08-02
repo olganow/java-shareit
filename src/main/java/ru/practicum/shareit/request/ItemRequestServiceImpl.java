@@ -53,21 +53,17 @@ public class ItemRequestServiceImpl implements ItemRequestService {
     public ItemRequestDto getRequestById(Long id, Long requestId) {
         validateUser(id);
 
-        Optional<ItemRequest> itemRequestOptional = itemRequestsRepository.findById(requestId);
+        ItemRequest itemRequest = itemRequestsRepository.findById(requestId)
+                .orElseThrow(() -> new NotFoundException("Request hasn't found"));
 
-        if (itemRequestOptional.isPresent()) {
-            ItemRequest itemRequest = itemRequestOptional.get();
-            log.info("Get request by id = {}", requestId);
-            ItemRequestDto request = itemRequestToRequestWithItems(itemRequest);
-            List<ItemDto> items = itemRepository.findAllByRequestId(requestId).stream()
-                    .map(ItemMapper::itemToItemDto).collect(Collectors.toList());
+        ItemRequestDto request = itemRequestToRequestWithItems(itemRequest);
+        List<ItemDto> items = itemRepository.findAllByRequestId(requestId).stream()
+                .map(ItemMapper::itemToItemDto).collect(Collectors.toList());
 
-            request.setItems(items.isEmpty() ? new ArrayList<>() : items);
+        request.setItems(items.isEmpty() ? new ArrayList<>() : items);
+        log.info("Get request by id = {}", requestId);
+        return request;
 
-            return request;
-        } else {
-            throw new NotFoundException("Request hasn't found");
-        }
     }
 
     public List<ItemRequestDto> getAllRequestsByRequester(Long id, int from, int size) {
@@ -76,26 +72,8 @@ public class ItemRequestServiceImpl implements ItemRequestService {
 
         List<ItemRequest> itemRequests = itemRequestsRepository.findAllByRequesterId(id, pageable);
 
-        List<ItemRequestDto> itemRequestDto = new ArrayList<>();
-        List<Long> requests = itemRequests.stream()
-                .map(ItemRequest::getId)
-                .collect(Collectors.toList());
-
-        List<Item> itemsByRequests = itemRepository.findByRequest_IdIn(requests);
-
-        Map<ItemRequest, List<Item>> itemRequestsByItem = itemsByRequests.stream()
-                .collect(groupingBy(Item::getRequest, toList()));
-
-        for (ItemRequest itemRequest : itemRequests) {
-            List<Item> items = itemRequestsByItem.getOrDefault(itemRequest, List.of());
-
-            List<ItemDto> itemDtos = items.stream()
-                    .map(ItemMapper::itemToItemDto)
-                    .collect(toList());
-            itemRequestDto.add(ItemRequestMapper.toItemRequestDto(itemRequest, itemDtos));
-        }
         log.info("Get requests by requester with id = {}", id);
-        return itemRequestDto;
+        return getItemRequestsDtoWithItems(itemRequests);
     }
 
 
@@ -105,6 +83,11 @@ public class ItemRequestServiceImpl implements ItemRequestService {
 
         List<ItemRequest> itemRequests = itemRequestsRepository.findAllByRequesterIdNot(id, pageable);
 
+        log.info("Get all requests");
+        return getItemRequestsDtoWithItems(itemRequests);
+    }
+
+    private List<ItemRequestDto> getItemRequestsDtoWithItems(List<ItemRequest> itemRequests) {
         List<ItemRequestDto> itemRequestDto = new ArrayList<>();
         List<Long> requests = itemRequests.stream()
                 .map(ItemRequest::getId)
@@ -123,7 +106,6 @@ public class ItemRequestServiceImpl implements ItemRequestService {
                     .collect(toList());
             itemRequestDto.add(ItemRequestMapper.toItemRequestDto(itemRequest, itemDtos));
         }
-        log.info("Get all requests");
         return itemRequestDto;
     }
 
