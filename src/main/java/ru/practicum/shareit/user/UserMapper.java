@@ -23,7 +23,7 @@ public class UserMapper {
         );
     }
 
-    public static ItemDto.Owner ownerToUser(UserDto userDto) {
+    public static ItemDto.Owner userDtoToOwner(UserDto userDto) {
         return new ItemDto.Owner(
                 userDto.getId(),
                 userDto.getName(),
