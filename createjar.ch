@@ -1,7 +1,12 @@
 #!/bin/bash
 cd gateway
-rm -fr /gateway/target
+rm -fr target
+mvn clean package
 
+cd ..
+
+cd server
+rm -fr target
 mvn clean package
 
 
