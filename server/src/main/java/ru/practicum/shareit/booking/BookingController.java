@@ -22,7 +22,7 @@ public class BookingController {
 
     @PostMapping()
     public BookingDto addBooking(@RequestHeader(REQUEST_HEADER_USER_ID) Long id,
-                                 @Valid @RequestBody BookingShortDto bookingShortDto) {
+                                 @RequestBody BookingShortDto bookingShortDto) {
         return bookingService.createBooking(id, bookingShortDto);
     }
 
