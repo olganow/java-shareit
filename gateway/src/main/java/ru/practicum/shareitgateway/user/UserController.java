@@ -23,9 +23,9 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Object> getUserById(@PathVariable Long userId) {
-        log.info("Get user with id = {}", userId);
-        return userClient.getUserById(userId);
+    public ResponseEntity<Object> getUserById(@PathVariable Long id) {
+        log.info("Get user with id = {}", id);
+        return userClient.getUserById(id);
     }
 
     @GetMapping
@@ -37,14 +37,14 @@ public class UserController {
     @PatchMapping("/{id}")
     public ResponseEntity<Object> updateUserById(@Validated(Marker.OnUpdate.class)
                                                  @RequestBody UserRequestDto userRequestDto,
-                                                 @PathVariable Long userId) {
-        log.info("Update user with id = {}", userId);
-        return userClient.updateUserById(userId, userRequestDto);
+                                                 @PathVariable Long id) {
+        log.info("Update user with id = {}", id);
+        return userClient.updateUserById(id, userRequestDto);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Object> removeUserById(@PathVariable Long userId) {
-        log.info("Remove user with id = {}", userId);
-        return userClient.removeUserById(userId);
+    public ResponseEntity<Object> removeUserById(@PathVariable  Long id) {
+        log.info("Remove user with id = {}", id);
+        return userClient.removeUserById(id);
     }
 }
