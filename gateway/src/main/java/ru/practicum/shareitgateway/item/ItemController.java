@@ -8,6 +8,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareitgateway.item.dto.CommentDto;
 import ru.practicum.shareitgateway.item.dto.ItemDto;
+import ru.practicum.shareitgateway.util.Marker;
 
 import javax.validation.Valid;
 
@@ -23,7 +24,7 @@ public class ItemController {
 
     @PostMapping
     public ResponseEntity<Object> createItem(@RequestHeader(REQUEST_HEADER_USER_ID) Long userId,
-                                             @RequestBody @Valid ItemDto requestDto) {
+                                             @Validated(Marker.OnCreate.class) @Valid @RequestBody ItemDto requestDto) {
         log.info("Create item");
         return itemClient.createItem(userId, requestDto);
     }
@@ -35,16 +36,14 @@ public class ItemController {
         return itemClient.getItemById(id, userId);
     }
 
-
     @GetMapping
     public ResponseEntity<Object> getItems(@RequestHeader(REQUEST_HEADER_USER_ID) Long userId) {
         log.info("Get items {}", userId);
         return itemClient.getItems(userId);
     }
 
-
     @PatchMapping("/{id}")
-    public ResponseEntity<Object> updateItem(@RequestBody ItemDto requestDto,
+    public ResponseEntity<Object> updateItem(@Validated(Marker.OnUpdate.class) @RequestBody ItemDto requestDto,
                                              @PathVariable Long id,
                                              @RequestHeader(REQUEST_HEADER_USER_ID) Long userId) {
         log.info("Update item with id = {}", id);

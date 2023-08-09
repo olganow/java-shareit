@@ -12,12 +12,14 @@ import ru.practicum.shareitgateway.util.Marker;
 @Controller
 @RequestMapping("/users")
 @RequiredArgsConstructor
+@Validated
 @Slf4j
 public class UserController {
     private final UserClient userClient;
 
     @PostMapping
-    public ResponseEntity<Object> createUser(@RequestBody @Validated(Marker.OnCreate.class) UserRequestDto userRequestDto) {
+    public ResponseEntity<Object> createUser(@RequestBody @Validated(Marker.OnCreate.class)
+                                             UserRequestDto userRequestDto) {
         log.info("Create user {}", userRequestDto);
         return userClient.createUser(userRequestDto);
     }
@@ -43,7 +45,7 @@ public class UserController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Object> removeUserById(@PathVariable  Long id) {
+    public ResponseEntity<Object> removeUserById(@PathVariable Long id) {
         log.info("Remove user with id = {}", id);
         return userClient.removeUserById(id);
     }

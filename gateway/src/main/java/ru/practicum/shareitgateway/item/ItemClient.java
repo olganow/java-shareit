@@ -51,7 +51,7 @@ public class ItemClient extends BaseClient {
     }
 
     public ResponseEntity<Object> searchItemByText(Long userId, String text) {
-        if (text.isBlank()) return ResponseEntity.ok().body(List.of());
+        if (text.isBlank()) return ResponseEntity.ok(List.of());
         Map<String, Object> parameters = Map.of("text", text);
         log.info("Find item with text = {}", text);
         return get("/search?text={text}", userId, parameters);
