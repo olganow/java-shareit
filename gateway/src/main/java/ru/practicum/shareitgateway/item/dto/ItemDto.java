@@ -16,15 +16,15 @@ import javax.validation.constraints.Size;
 @NoArgsConstructor
 public class ItemDto {
 
-    @NotBlank(groups = {Marker.OnCreate.class, Marker.OnUpdate.class})
+    @NotBlank(groups = {Marker.OnCreate.class})
     @Size(groups = {Marker.OnCreate.class, Marker.OnUpdate.class}, max = 255)
     private String name;
 
-    @NotBlank(groups = {Marker.OnCreate.class, Marker.OnUpdate.class})
+    @NotBlank(groups = {Marker.OnCreate.class})
     @Size(groups = {Marker.OnCreate.class, Marker.OnUpdate.class}, max = 512)
     private String description;
 
-    @NotNull(groups = {Marker.OnCreate.class, Marker.OnUpdate.class})
+    @NotNull(groups = {Marker.OnCreate.class})
     private Boolean available;
 
     private Long requestId;
