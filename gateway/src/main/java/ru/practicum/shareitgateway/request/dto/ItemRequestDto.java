@@ -15,7 +15,7 @@ import javax.validation.constraints.Size;
 @NoArgsConstructor
 public class ItemRequestDto {
 
-    @NotBlank(groups = {Marker.OnCreate.class})
-    @Size(groups = {Marker.OnCreate.class}, max = 512)
+    @NotBlank(groups = {Marker.OnCreate.class, Marker.OnUpdate.class})
+    @Size(groups = {Marker.OnCreate.class, Marker.OnUpdate.class}, max = 512)
     private String description;
 }

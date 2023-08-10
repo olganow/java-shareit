@@ -21,7 +21,7 @@ public class DateValidation implements ConstraintValidator<DateValidator, BookIt
         if (start == null || end == null) {
             return false;
         }
-        if (start.isBefore(now) || start.isAfter(end)) {
+        if (start.isBefore(now)) {
             return false;
         }
         return start.isBefore(end);
