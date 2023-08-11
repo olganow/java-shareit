@@ -17,11 +17,11 @@ import javax.validation.constraints.Size;
 public class ItemDto {
 
     @NotBlank(groups = {Marker.OnCreate.class})
-    @Size(groups = {Marker.OnCreate.class, Marker.OnUpdate.class}, max = 255)
+    @Size(groups = {Marker.OnCreate.class}, max = 255)
     private String name;
 
     @NotBlank(groups = {Marker.OnCreate.class})
-    @Size(groups = {Marker.OnCreate.class, Marker.OnUpdate.class}, max = 512)
+    @Size(groups = {Marker.OnCreate.class}, max = 512)
     private String description;
 
     @NotNull(groups = {Marker.OnCreate.class})
