@@ -72,7 +72,7 @@ Java, SpringBoot, Maven, JUnit, RESTful API, Postgresql, Doker, Shell, MockMVC.
 
 ## Описание базы данных
 На диаграмме ниже представлен визуальный обзор базы данных Java-shareit и связей между таблицами.
-![Java-filmorate project data base](src/main/resources/db_schema_shareit.png)
+![Java-shareit project data base](server/src/main/resources/schema.sql)
 [исходник](https://drive.google.com/file/d/1GrEYdtTaxIOHjS7wLhHCFe4MVzbduqSR/view?usp=sharing)
 
 Ниже приведен обзор таблиц базы данных:
