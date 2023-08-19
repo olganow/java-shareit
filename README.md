@@ -73,7 +73,7 @@ Java, SpringBoot, Maven, JUnit, RESTful API, Postgresql, Doker, Shell, MockMVC.
 ## Описание базы данных
 На диаграмме ниже представлен визуальный обзор базы данных Java-shareit и связей между таблицами.
 ![Java-shareit project data base](server/src/main/resources/db_schema_shareit.png)
-[исходник](https://drive.google.com/file/d/1GrEYdtTaxIOHjS7wLhHCFe4MVzbduqSR/view?usp=sharing)
+//[исходник](https://drive.google.com/file/d/1GrEYdtTaxIOHjS7wLhHCFe4MVzbduqSR/view?usp=sharing)
 
 Ниже приведен обзор таблиц базы данных:
 - users: содержит данные о пользователях.
@@ -89,3 +89,13 @@ Java, SpringBoot, Maven, JUnit, RESTful API, Postgresql, Doker, Shell, MockMVC.
 - интеграционные тесты, проверяющие взаимодействие с базой данных.
 - тесты для всех REST-эндпоинтов приложения с использованием MockMVC.
 - тесты для работы с JSON для DTO с помощью аннотации @JsonTest.
+
+### Иструкция по запуску локально
+
+1. Установить Doker
+2. Сохранить проект Shareit на устройстве
+3. Убедитесь, что порты указанные в docker-compose.yml свободны на устройстве
+4. Если временная зона пользователя отличается от UTC+0, то указать нужную временную зону в файле server/Dockerfile.
+5. Для создания jar файлов запустите скрипт createdockerbuild.ch
+6. Для создания и запуска  Doker образа запустите скрипт createjar.ch
+7. Запустите локально API тесты
